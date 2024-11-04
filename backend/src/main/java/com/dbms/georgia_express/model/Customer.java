@@ -1,15 +1,13 @@
 package com.dbms.georgia_express.model;
 import jakarta.persistence.*;
-import lombok.extern.log4j.Log4j2;
 
-import java.util.Date;
 
 @Entity
 @Table(name = "customer")
 public class Customer {
     @Id
     @Column(name = "customerId")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int customerId;
 
     @Column(name = "name")
@@ -22,7 +20,7 @@ public class Customer {
     private String email;
 
     @Column(name = "phoneNumber")
-    private String phone;
+    private String phoneNumber;
 
     @Column(name = "address")
     private String address;
@@ -34,16 +32,16 @@ public class Customer {
     private int salary;
 
     @Column(name = "dob")
-    private Date dateOfBirth;
+    private String dateOfBirth;
 
     public Customer() {}
 
-    public Customer(String name, String ssn, String email, String phone,
-                    String address, int creditScore, int salary, Date dateOfBirth) {
+    public Customer(String name, String ssn, String email, String phoneNumber,
+                    String address, int creditScore, int salary, String dateOfBirth) {
         this.name = name;
         this.ssn = ssn;
         this.email = email;
-        this.phone = phone;
+        this.phoneNumber = phoneNumber;
         this.address = address;
         this.creditScore = creditScore;
         this.salary = salary;
@@ -83,11 +81,11 @@ public class Customer {
     }
 
     public String getPhone() {
-        return phone;
+        return phoneNumber;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhone(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getAddress() {
@@ -114,11 +112,11 @@ public class Customer {
         this.salary = salary;
     }
 
-    public Date getDateOfBirth() {
+    public String getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 }

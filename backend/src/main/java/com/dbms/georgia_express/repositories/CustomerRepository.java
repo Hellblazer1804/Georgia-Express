@@ -7,6 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
-    List<Customer> getCustomersByDateOfBirth(Date dateOfBirth);
+    List<Customer> getCustomersByDateOfBirth(String dateOfBirth);
     List<Customer> getCustomerByAddress(String address);
 }
