@@ -1,0 +1,101 @@
+
+
+.formContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+#formSection {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+#logoNameContainer {
+    display: grid;
+    margin: auto;
+    gap: 25px;
+    border-bottom: 1px black solid;
+    margin-bottom: 30px;
+    margin-top: 0;
+
+}
+
+#logoNameContainer span{
+    grid-row-start: 1;
+    grid-column-start: 2;
+    margin-top: auto;
+    font: 20px black;
+    color: #C9A473
+
+
+}
+
+
+
+
+#formTitle {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: blue;
+    text-decoration: underline;
+}
+
+#inputGroup {
+    margin-bottom: 20px;
+}
+
+#inputGroup label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+#inputGroup input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #D9D9D9;
+    opacity: 50%;
+    color: #333;
+}
+
+.footerLinks {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.footerLinks a {
+    color: navy;
+    text-decoration: none;
+}
+
+.footerLinks a:hover {
+    text-decoration: underline;
+}
+
+.formButton {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    background-color: #D9D9D9;
+    color: black;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.formButton:hover {
+    background-color: blue;
+}
