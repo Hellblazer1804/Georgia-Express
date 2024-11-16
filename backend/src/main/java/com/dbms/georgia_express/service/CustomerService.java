@@ -2,6 +2,7 @@ package com.dbms.georgia_express.service;
 
 
 import com.dbms.georgia_express.model.Customer;
+import com.dbms.georgia_express.model.VerificationResult;
 import com.dbms.georgia_express.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,16 @@ public class CustomerService {
                 .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
 
         customerRepository.delete(customer);
+    }
+
+    @Autowired
+    private CustomerVerificationService verificationService;
+
+    public VerificationResult processCreditCardApplication(Long customerId) {
+        Customer customer = customerRepository.findById(Math.toIntExact(customerId))
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        return verificationService.verifyCustomerForCreditCard(customer);
     }
 
 
