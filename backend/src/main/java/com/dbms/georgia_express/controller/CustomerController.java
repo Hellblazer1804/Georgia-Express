@@ -1,7 +1,6 @@
 package com.dbms.georgia_express.controller;
 
 import com.dbms.georgia_express.service.CustomerService;
-import com.dbms.georgia_express.model.VerificationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,10 +44,4 @@ public class CustomerController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{Id}/verify-credit-card")
-    public ResponseEntity<VerificationResult> verifyCreditCardEligibility(
-            @PathVariable Long customerId) {
-        VerificationResult result = customerService.processCreditCardApplication(customerId);
-        return ResponseEntity.ok(result);
-    }
 }

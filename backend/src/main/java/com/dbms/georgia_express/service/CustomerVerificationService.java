@@ -1,7 +1,7 @@
 package com.dbms.georgia_express.service;
 
 import com.dbms.georgia_express.model.Customer;
-import com.dbms.georgia_express.model.VerificationResult;
+import com.dbms.georgia_express.model.Card;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
@@ -14,29 +14,29 @@ public class CustomerVerificationService {
     private static final double MINIMUM_CREDIT_SCORE = 500;
     private static final double MAX_CREDIT_SCORE = 850;
 
-    public VerificationResult verifyCustomerForCreditCard(Customer customer) {
+    public Card verifyCustomerForCreditCard(Customer customer) {
         // 1. Age Verification
         if (!isCustomerAboveMinimumAge(customer.getDateOfBirth())) {
-            return new VerificationResult(false,
+            return new Card(false,
                     "Customer must be at least " + MINIMUM_AGE + " years old", 0);
         }
 
         // 2. SSN Verification
         if (!isValidSSN(customer.getSsn())) {
-            return new VerificationResult(false,
+            return new Card(false,
                     "Invalid SSN format", 0);
         }
 
         // 3. Credit Score Verification
         if (customer.getCreditScore() < MINIMUM_CREDIT_SCORE) {
-            return new VerificationResult(false,
+            return new Card(false,
                     "Credit score must be at least " + MINIMUM_CREDIT_SCORE, 0);
         }
 
         // 4. Calculate Credit Limit using customer's salary and credit score
         double creditLimit = calculateCreditLimit(customer.getSalary(), customer.getCreditScore());
 
-        return new VerificationResult(true,
+        return new Card(true,
                 "Customer approved for credit card", creditLimit);
     }
 
