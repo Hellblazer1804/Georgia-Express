@@ -2,6 +2,7 @@ package com.dbms.georgia_express.service;
 
 import com.dbms.georgia_express.dto.LoginRequest;
 import com.dbms.georgia_express.dto.RegistrationRequest;
+import com.dbms.georgia_express.exception.UnauthorizedException;
 import com.dbms.georgia_express.model.Customer;
 import com.dbms.georgia_express.model.CustomerLogin;
 import com.dbms.georgia_express.repositories.CustomerLoginRepository;
@@ -42,15 +43,14 @@ public class CustomerLoginService {
 
     public CustomerLogin login(LoginRequest request) {
         CustomerLogin customerLogin = customerLoginRepository.findById(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
+                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), customerLogin.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
+            throw new UnauthorizedException("Invalid username or password");
         }
 
         return customerLogin;
     }
-
 
     private boolean isValidPassword(String password) {
         // Regex enforces to have passwords of at least length 8 of any symbol
