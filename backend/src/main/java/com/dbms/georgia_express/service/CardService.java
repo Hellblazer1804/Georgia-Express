@@ -6,6 +6,7 @@ import com.dbms.georgia_express.dto.CardDTO;
 import com.dbms.georgia_express.repositories.CustomerRepository;
 import com.dbms.georgia_express.repositories.CardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -98,7 +99,7 @@ import java.util.Random;
 //        return cardRepository.save(card);
 //    }
 //}
-
+@Service
 public class CardService {
 
     @Autowired

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS card(
-    card_number INTEGER,
-    expirationDate DATE,
+    cardNumber INTEGER,
+    expirationDate VARCHAR(255),
     cvv INTEGER,
     creditLimit NUMERIC(12, 2),
     cardBalance NUMERIC(12, 2),

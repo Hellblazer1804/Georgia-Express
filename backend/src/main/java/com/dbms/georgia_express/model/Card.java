@@ -19,7 +19,7 @@ public class Card {
     @Column(name = "cvv")
     private int cvv;
 
-    @Column(name = "credit_limit")
+    @Column(name = "credit_limit", columnDefinition = "NUMERIC(12,2)")
     private double creditLimit;
 
     @Column(name = "card_status")
@@ -41,13 +41,13 @@ public class Card {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Column(name = "card_balance")
+    @Column(name = "card_balance", columnDefinition = "NUMERIC(12,2)")
     private BigDecimal cardBalance;
 
-    @Column(name = "minimum_payment")
+    @Column(name = "minimum_payment", columnDefinition = "NUMERIC(8,2)")
     private BigDecimal minimumPayment;
 
-    @Column(name = "reward_points")
+    @Column(name = "reward_points", columnDefinition = "NUMERIC(10,2)")
     private int rewardPoints;
 
     public Card() {}
@@ -57,7 +57,7 @@ public class Card {
                 String verificationReason, double recommendedCreditLimit, Customer customer,
                 BigDecimal cardBalance, BigDecimal minimumPayment,
                 int rewardPoints) {
-        this.cardNsumber = cardNumber;
+        this.cardNumber = cardNumber;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
         this.creditLimit = creditLimit;

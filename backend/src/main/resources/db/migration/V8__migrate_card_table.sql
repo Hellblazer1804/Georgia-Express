@@ -1,4 +1,5 @@
 ALTER TABLE card RENAME COLUMN cardNumber TO card_number;
+ALTER TABLE card ALTER COLUMN card_number TYPE VARCHAR(255);
 ALTER TABLE card RENAME COLUMN expirationDate TO expiration_date;
 ALTER TABLE card RENAME COLUMN creditLimit TO credit_limit;
 ALTER TABLE card RENAME COLUMN cardBalance TO card_balance;
