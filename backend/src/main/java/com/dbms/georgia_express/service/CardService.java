@@ -143,7 +143,7 @@ public class CardService {
                 "Approved",
                 verificationResult.getCreditLimit(),
                 customer,
-                BigDecimal.ZERO, // Initial balance
+                BigDecimal.valueOf(100), // Initial balance
                 BigDecimal.ZERO, // Initial minimum payment
                 0 // Initial reward points
         );
@@ -214,6 +214,7 @@ public class CardService {
         cardDTO.setCardBalance(card.getCardBalance());
         cardDTO.setMinimumPayment(card.getMinimumPayment());
         cardDTO.setRewardPoints(card.getRewardPoints());
+        cardDTO.setCardStatus(card.getCardStatus());
         return cardDTO;
     }
 

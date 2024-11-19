@@ -65,6 +65,13 @@ public class CardDTO {
     public void setExpiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
     }
+    public void setCardStatus(String cardStatus){
+        this.cardStatus = cardStatus;
+    }
+
+    public String getCardStatus(){
+        return cardStatus;
+    }
 
     public int getCvv() {
         return cvv;

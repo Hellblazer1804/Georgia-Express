@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @Service
 public class CustomerVerificationService {
@@ -42,13 +43,25 @@ public class CustomerVerificationService {
 
     private boolean isCustomerAboveMinimumAge(String dateOfBirth) {
         try {
-            // Parse the date string to LocalDate
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate birthDate = LocalDate.parse(dateOfBirth, formatter);
+            // Define formatters for both date patterns
+            DateTimeFormatter formatterYMD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            DateTimeFormatter formatterMDY = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+            LocalDate birthDate;
+
+            // Try parsing with yyyy-MM-dd format
+            try {
+                birthDate = LocalDate.parse(dateOfBirth, formatterYMD);
+            } catch (DateTimeParseException e) {
+                // If that fails, try MM/dd/yyyy format
+                birthDate = LocalDate.parse(dateOfBirth, formatterMDY);
+            }
 
             // Calculate age
             return Period.between(birthDate, LocalDate.now()).getYears() >= MINIMUM_AGE;
         } catch (Exception e) {
+            // Log the exception for debugging purposes
+            System.err.println("Error parsing date: " + e.getMessage());
             return false;
         }
     }
