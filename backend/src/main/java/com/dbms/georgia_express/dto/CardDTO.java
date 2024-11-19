@@ -1,81 +1,54 @@
-package com.dbms.georgia_express.model;
+package com.dbms.georgia_express.dto;
 
-import jakarta.persistence.*;
+import com.dbms.georgia_express.model.Customer;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.ManyToOne;
 
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "card")
-public class Card {
+public class CardDTO {
 
-    @Column(name = "card_number")
+    @JsonProperty("card_number")
     private String cardNumber;
 
 
-    @Column(name = "expiry_date")
+    @JsonProperty("expiry_date")
     private String expiryDate;
 
-    @Column(name = "cvv")
+    @JsonProperty("cvv")
     private int cvv;
 
-    @Column(name = "credit_limit")
+    @JsonProperty("credit_limit")
     private double creditLimit;
 
-    @Column(name = "card_status")
+    @JsonProperty("card_status")
     private String cardStatus;  // e.g., "Active", "Blocked", "Expired"
 
-    @Column(name = "is_approved")
+    @JsonProperty("is_approved")
     private boolean approved;
 
-    @Column(name = "verification_reason")
+    @JsonProperty("verification_reason")
     private String verificationReason;
 
-    @Column(name = "recommended_credit_limit")
+    @JsonProperty("recommended_credit_limit")
     private double recommendedCreditLimit;
 
-    @Column(name = "result")
+    @JsonProperty("result")
     private String reason;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JsonProperty("customer_id")
     private Customer customer;
 
-    @Column(name = "card_balance")
+    @JsonProperty("card_balance")
     private BigDecimal cardBalance;
 
-    @Column(name = "minimum_payment")
+    @JsonProperty("minimum_payment")
     private BigDecimal minimumPayment;
 
-    @Column(name = "reward_points")
+    @JsonProperty("reward_points")
     private int rewardPoints;
 
-    public Card() {}
-
-    public Card(String cardNumber, String expiryDate, int cvv,
-                double creditLimit, String cardStatus, boolean approved,
-                String verificationReason, double recommendedCreditLimit, Customer customer,
-                BigDecimal cardBalance, BigDecimal minimumPayment,
-                int rewardPoints) {
-        this.cardNumber = cardNumber;
-        this.expiryDate = expiryDate;
-        this.cvv = cvv;
-        this.creditLimit = creditLimit;
-        this.approved = approved;
-        this.verificationReason = verificationReason;
-        this.recommendedCreditLimit = recommendedCreditLimit;
-        this.customer = customer;
-        this.cardBalance = cardBalance;
-        this.minimumPayment = minimumPayment;
-        this.rewardPoints = rewardPoints;
-    }
-
-    public Card(boolean approved, String reason, double recommendedCreditLimit) {
-        this.approved = approved;
-        this.reason = reason;
-        this.recommendedCreditLimit = recommendedCreditLimit;
-    }
-
-    // Original Card getters and setters
 
     public String getCardNumber() {
         return cardNumber;
