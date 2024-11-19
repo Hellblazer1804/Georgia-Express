@@ -8,29 +8,30 @@ import java.math.BigDecimal;
 @Table(name = "card")
 public class Card {
 
-    @Column(name = "card_number")
+    @Id
+    @Column(name = "cardNumber")
     private String cardNumber;
 
 
-    @Column(name = "expiry_date")
+    @Column(name = "expirationDate")
     private String expiryDate;
 
     @Column(name = "cvv")
     private int cvv;
 
-    @Column(name = "credit_limit")
+    @Column(name = "creditLimit")
     private double creditLimit;
 
-    @Column(name = "card_status")
+    @Column(name = "cardStatus")
     private String cardStatus;  // e.g., "Active", "Blocked", "Expired"
 
-    @Column(name = "is_approved")
+    @Column(name = "isApproved")
     private boolean approved;
 
-    @Column(name = "verification_reason")
+    @Column(name = "verificationReason")
     private String verificationReason;
 
-    @Column(name = "recommended_credit_limit")
+    @Column(name = "recommendedCreditLimit")
     private double recommendedCreditLimit;
 
     @Column(name = "result")
@@ -40,13 +41,13 @@ public class Card {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Column(name = "card_balance")
+    @Column(name = "cardBalance")
     private BigDecimal cardBalance;
 
-    @Column(name = "minimum_payment")
+    @Column(name = "minimumPayment")
     private BigDecimal minimumPayment;
 
-    @Column(name = "reward_points")
+    @Column(name = "rewardPoints")
     private int rewardPoints;
 
     public Card() {}
