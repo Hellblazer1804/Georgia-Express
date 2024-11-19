@@ -68,6 +68,7 @@ public class Card {
         this.cardBalance = cardBalance;
         this.minimumPayment = minimumPayment;
         this.rewardPoints = rewardPoints;
+        this.cardStatus = cardStatus;
     }
 
     public Card(boolean approved, String reason, double recommendedCreditLimit) {
@@ -92,6 +93,14 @@ public class Card {
 
     public void setExpiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
+    }
+
+    public String getCardStatus(){
+        return  cardStatus;
+    }
+
+    public void setCardStatus(String cardStatus) {
+        this.cardStatus = cardStatus;
     }
 
     public int getCvv() {
