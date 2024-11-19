@@ -9,29 +9,29 @@ import java.math.BigDecimal;
 public class Card {
 
     @Id
-    @Column(name = "cardNumber")
+    @Column(name = "card_number")
     private String cardNumber;
 
 
-    @Column(name = "expirationDate")
+    @Column(name = "expiration_date")
     private String expiryDate;
 
     @Column(name = "cvv")
     private int cvv;
 
-    @Column(name = "creditLimit")
+    @Column(name = "credit_limit")
     private double creditLimit;
 
-    @Column(name = "cardStatus")
+    @Column(name = "card_status")
     private String cardStatus;  // e.g., "Active", "Blocked", "Expired"
 
-    @Column(name = "isApproved")
+    @Column(name = "is_approved")
     private boolean approved;
 
-    @Column(name = "verificationReason")
+    @Column(name = "verification_reason")
     private String verificationReason;
 
-    @Column(name = "recommendedCreditLimit")
+    @Column(name = "recommended_credit_limit")
     private double recommendedCreditLimit;
 
     @Column(name = "result")
@@ -41,13 +41,13 @@ public class Card {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Column(name = "cardBalance")
+    @Column(name = "card_balance")
     private BigDecimal cardBalance;
 
-    @Column(name = "minimumPayment")
+    @Column(name = "minimum_payment")
     private BigDecimal minimumPayment;
 
-    @Column(name = "rewardPoints")
+    @Column(name = "reward_points")
     private int rewardPoints;
 
     public Card() {}
@@ -57,7 +57,7 @@ public class Card {
                 String verificationReason, double recommendedCreditLimit, Customer customer,
                 BigDecimal cardBalance, BigDecimal minimumPayment,
                 int rewardPoints) {
-        this.cardNumber = cardNumber;
+        this.cardNsumber = cardNumber;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
         this.creditLimit = creditLimit;

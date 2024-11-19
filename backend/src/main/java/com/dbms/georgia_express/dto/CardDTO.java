@@ -8,29 +8,29 @@ import java.math.BigDecimal;
 
 public class CardDTO {
 
-    @JsonProperty("cardNumber")
+    @JsonProperty("card_number")
     private String cardNumber;
 
 
-    @JsonProperty("expirationDate")
+    @JsonProperty("expiration_date")
     private String expiryDate;
 
     @JsonProperty("cvv")
     private int cvv;
 
-    @JsonProperty("creditLimit")
+    @JsonProperty("credit_limit")
     private double creditLimit;
 
-    @JsonProperty("cardStatus")
+    @JsonProperty("card_status")
     private String cardStatus;  // e.g., "Active", "Blocked", "Expired"
 
-    @JsonProperty("isApproved")
+    @JsonProperty("is_approved")
     private boolean approved;
 
-    @JsonProperty("verificationReason")
+    @JsonProperty("verification_reason")
     private String verificationReason;
 
-    @JsonProperty("recommendedCreditLimit")
+    @JsonProperty("recommended_credit_limit")
     private double recommendedCreditLimit;
 
     @JsonProperty("result")
@@ -40,13 +40,13 @@ public class CardDTO {
     @JsonProperty("customer_id")
     private Customer customer;
 
-    @JsonProperty("cardBalance")
+    @JsonProperty("card_balance")
     private BigDecimal cardBalance;
 
-    @JsonProperty("minimumPayment")
+    @JsonProperty("minimum_payment")
     private BigDecimal minimumPayment;
 
-    @JsonProperty("rewardPoints")
+    @JsonProperty("reward_points")
     private int rewardPoints;
 
 

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS card(
-    cardNumber INTEGER,
+    card_number INTEGER,
     expirationDate DATE,
     cvv INTEGER,
     creditLimit NUMERIC(12, 2),
