@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -38,6 +39,7 @@ public class CartService {
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
                     newCart.setCustomerLogin(customerLogin);
+                    newCart.setCartAmount(BigDecimal.ZERO);
                     return cartRepository.save(newCart);
                 });
 
@@ -52,6 +54,9 @@ public class CartService {
 
         cartItem.setQuantity(cartItem.getQuantity() + quantity);
         cartItemRepository.save(cartItem);
+
+        // Update cart amount
+        updateCartAmount(cart);
     }
 
     public void removeFromCart(String username, Long itemId) {
@@ -69,6 +74,9 @@ public class CartService {
 
         cart.removeCartItem(cartItem);
         cartRepository.save(cart);
+
+        // Update cart amount
+        updateCartAmount(cart);
     }
 
     public List<CartItem> getCart(String username) {
@@ -80,5 +88,36 @@ public class CartService {
 
         return cart.getCartItems();
     }
-}
 
+    public void clearCart(String username) {
+        CustomerLogin customerLogin = customerLoginRepository.findById(username)
+                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
+
+        Cart cart = cartRepository.findByCustomerLogin(customerLogin)
+                .orElseThrow(() -> new NotFoundException("Cart not found"));
+
+        // Remove all cart items
+        cart.getCartItems().clear();
+
+        // Reset cart amount
+        cart.setCartAmount(BigDecimal.ZERO);
+
+        // Save the empty cart
+        cartRepository.save(cart);
+    }
+
+    public BigDecimal getTotalAmount(List<CartItem> cartItems) {
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        for (CartItem cartItem : cartItems) {
+            totalAmount = totalAmount.add(BigDecimal.valueOf(cartItem.getItem().getCost())
+                    .multiply(BigDecimal.valueOf(cartItem.getQuantity())));
+        }
+        return totalAmount;
+    }
+
+    private void updateCartAmount(Cart cart) {
+        BigDecimal cartAmount = getTotalAmount(cart.getCartItems());
+        cart.setCartAmount(cartAmount);
+        cartRepository.save(cart);
+    }
+}

@@ -2,6 +2,7 @@ package com.dbms.georgia_express.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,10 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
 
-    // Getters and setters
+    @Column(name = "cart_amount")
+    private BigDecimal cartAmount;
+
+// Getters and setters
 
     public void addCartItem(CartItem cartItem) {
         cartItems.add(cartItem);
@@ -50,5 +54,13 @@ public class Cart {
 
     public void setCartId(Long cartId) {
         this.cartId = cartId;
+    }
+
+    public BigDecimal getCartAmount() {
+        return cartAmount;
+    }
+
+    public void setCartAmount(BigDecimal cartAmount) {
+        this.cartAmount = cartAmount;
     }
 }

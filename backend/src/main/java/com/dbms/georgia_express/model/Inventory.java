@@ -14,7 +14,7 @@ public class Inventory {
     private String itemName;
 
     @Column(name = "cost")
-    private int cost;
+    private Integer cost;
 
     public Inventory(String itemName, int cost) {
         this.itemName = itemName;
@@ -25,7 +25,7 @@ public class Inventory {
 
     }
 
-    public void setItemId(int itemId) {
+    public void setItemId(Integer itemId) {
         this.itemId = itemId;
     }
 
@@ -37,7 +37,7 @@ public class Inventory {
         this.cost = cost;
     }
 
-    public int getItemId() {
+    public Integer getItemId() {
         return itemId;
     }
 
@@ -45,7 +45,7 @@ public class Inventory {
         return itemName;
     }
 
-    public int getCost() {
+    public Integer getCost() {
         return cost;
     }
 }

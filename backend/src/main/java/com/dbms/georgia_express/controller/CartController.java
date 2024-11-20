@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,8 @@ public class CartController {
     @GetMapping
     public ResponseEntity<CartResponse> getCart(@RequestHeader String username) {
         List<CartItem> cartItems = cartService.getCart(username);
-        return ResponseEntity.ok(new CartResponse(cartItems));
+        BigDecimal total = cartService.getTotalAmount(cartItems);
+        return ResponseEntity.ok(new CartResponse(cartItems,total));
     }
 }
 

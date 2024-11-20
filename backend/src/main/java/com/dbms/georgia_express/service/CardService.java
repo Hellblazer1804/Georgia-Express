@@ -1,6 +1,7 @@
 package com.dbms.georgia_express.service;
 
 import com.dbms.georgia_express.dto.PaymentDTO;
+import com.dbms.georgia_express.exception.BadRequestException;
 import com.dbms.georgia_express.exception.NotFoundException;
 import com.dbms.georgia_express.model.Customer;
 import com.dbms.georgia_express.model.Card;
@@ -95,6 +96,9 @@ public class CardService {
     public CardDTO updateCardBalance(Long cardId, BigDecimal newBalance) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException("Card not found"));
+        if (newBalance.compareTo(BigDecimal.valueOf(card.getCreditLimit())) > 0) {
+            throw new BadRequestException("Credit limit exceeded. Transaction failed");
+        }
         card.setCardBalance(newBalance);
         Card updatedCard = cardRepository.save(card);
         return mapToCardDTO(updatedCard);
@@ -119,6 +123,13 @@ public class CardService {
     public CardDTO findByCardNumber(String cardId) {
         Card card = cardRepository.findByCardNumber(cardId);
         return mapToCardDTO(card);
+    }
+
+    public Card findByCustomerId(Integer customerId) {
+        Customer customer = customerRepository.findById(Math.toIntExact(customerId))
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
+        Card card = cardRepository.findByCustomer(customer);
+        return card;
     }
 
     public void deleteCard(String cardNumber) {
