@@ -34,9 +34,6 @@ public class Card {
     @Column(name = "recommended_credit_limit")
     private double recommendedCreditLimit;
 
-    @Column(name = "result")
-    private String reason;
-
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -71,9 +68,9 @@ public class Card {
         this.cardStatus = cardStatus;
     }
 
-    public Card(boolean approved, String reason, double recommendedCreditLimit) {
+    public Card(boolean approved, double recommendedCreditLimit) {
         this.approved = approved;
-        this.reason = reason;
+//        this.reason = reason;
         this.recommendedCreditLimit = recommendedCreditLimit;
     }
 
@@ -150,10 +147,6 @@ public class Card {
 
     public void setRecommendedCreditLimit(double recommendedCreditLimit) {
         this.recommendedCreditLimit = recommendedCreditLimit;
-    }
-
-    public String getReason() {
-        return reason;
     }
 
     public int getRewardPoints() {

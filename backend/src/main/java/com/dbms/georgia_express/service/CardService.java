@@ -1,104 +1,23 @@
 package com.dbms.georgia_express.service;
 
+import com.dbms.georgia_express.dto.PaymentDTO;
 import com.dbms.georgia_express.model.Customer;
 import com.dbms.georgia_express.model.Card;
 import com.dbms.georgia_express.dto.CardDTO;
 import com.dbms.georgia_express.repositories.CustomerRepository;
 import com.dbms.georgia_express.repositories.CardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
-//public class CardService {
-//    @Autowired
-//    private CustomerVerificationService verificationService;
-//    private CustomerRepository customerRepository;
-//    private CardRepository cardRepository;
-//
-//    public Card processCreditCardApplication(Long customerId) {
-//        Customer customer = customerRepository.findById(Math.toIntExact(customerId))
-//                .orElseThrow(() -> new RuntimeException("Customer not found"));
-//
-//        return verificationService.verifyCustomerForCreditCard(customer);
-//    }
-//
-//    public Card generateCreditCard(Long customerId) {
-//        Customer customer = customerRepository.findById(Math.toIntExact(customerId))
-//                .orElseThrow(() -> new RuntimeException("Customer not found"));
-//
-//        Card verificationResult = verificationService.verifyCustomerForCreditCard(customer);
-//
-//        if (!verificationResult.isApproved()) {
-//            throw new RuntimeException("Customer is not eligible for a credit card: " + verificationResult.getReason());
-//        }
-//
-//        String cardNumber = generateCardNumber();
-//        String expiryDate = generateExpiryDate();
-//        int cvv = generateCVV();
-//
-//        Card newCard = new Card(
-//                cardNumber,
-//                expiryDate,
-//                cvv,
-//                verificationResult.getRecommendedCreditLimit(),
-//                "Active",
-//                true,
-//                "Approved",
-//                verificationResult.getRecommendedCreditLimit(),
-//                customer,
-//                BigDecimal.ZERO, // Initial balance
-//                BigDecimal.ZERO, // Initial minimum payment
-//                0 // Initial reward pointss
-//        );
-//
-//        return cardRepository.save(newCard);
-//    }
-//
-//    private String generateCardNumber() {
-//        Random random = new Random();
-//        StringBuilder sb = new StringBuilder(16);
-//        for (int i = 0; i < 16; i++) {
-//            sb.append(random.nextInt(10));
-//        }
-//        return sb.toString();
-//    }
-//
-//    private String generateExpiryDate() {
-//        LocalDate expiryDate = LocalDate.now().plusYears(5);
-//        return expiryDate.format(DateTimeFormatter.ofPattern("MM/yy"));
-//    }
-//
-//    private int generateCVV() {
-//        return new Random().nextInt(900) + 100; // Generates a number between 100 and 999
-//    }
-//
-//    // Additional methods for card management
-//
-//    public Card updateCardBalance(Long cardId, BigDecimal newBalance) {
-//        Card card = cardRepository.findById(cardId)
-//                .orElseThrow(() -> new RuntimeException("Card not found"));
-//        card.setCardBalance(newBalance);
-//        return cardRepository.save(card);
-//    }
-//
-//    public Card updateMinimumPayment(Long cardId, BigDecimal minimumPayment) {
-//        Card card = cardRepository.findById(cardId)
-//                .orElseThrow(() -> new RuntimeException("Card not found"));
-//        card.setMinimumPayment(minimumPayment);
-//        return cardRepository.save(card);
-//    }
-//
-//    public Card addRewardPoints(Long cardId, int points) {
-//        Card card = cardRepository.findById(cardId)
-//                .orElseThrow(() -> new RuntimeException("Card not found"));
-//        card.setRewardPoints(card.getRewardPoints() + points);
-//        return cardRepository.save(card);
-//    }
-//}
+
 @Service
 public class CardService {
 
@@ -137,14 +56,14 @@ public class CardService {
                 cardNumber,
                 expiryDate,
                 cvv,
-                verificationResult.getCreditLimit(),
+                verificationResult.getRecommendedCreditLimit(),
                 "Active",
                 true,
                 "Approved",
-                verificationResult.getCreditLimit(),
+                verificationResult.getRecommendedCreditLimit(),
                 customer,
+                BigDecimal.ZERO,// Initial minimum payment
                 BigDecimal.valueOf(100), // Initial balance
-                BigDecimal.ZERO, // Initial minimum payment
                 0 // Initial reward points
         );
 
@@ -196,9 +115,51 @@ public class CardService {
         return mapToCardDTO(updatedCard);
     }
 
-    public CardDTO findByCardNumber(Long cardId) {
-        Card card = cardRepository.findById(cardId) .orElseThrow(() -> new RuntimeException("Card not found"));
+    public CardDTO findByCardNumber(String cardId) {
+        Card card = cardRepository.findByCardNumber(cardId);
         return mapToCardDTO(card);
+    }
+
+    public void deleteCard(String cardNumber) {
+        Card card = cardRepository.findByCardNumber(cardNumber);
+        cardRepository.delete(card);
+    }
+
+    public PaymentDTO makePayment(String cardNumber, BigDecimal paymentAmount) {
+        Card card = cardRepository.findByCardNumber(cardNumber);
+        if (card == null) {
+            throw new RuntimeException("Card not found");
+        }
+
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setCardNumber(cardNumber);
+
+        if (paymentAmount != null) {
+            BigDecimal currentBalance = card.getCardBalance();
+            BigDecimal newBalance = currentBalance.subtract(paymentAmount);
+            card.setCardBalance(newBalance);
+
+            // Update minimum payment if necessary
+            if (card.getMinimumPayment().compareTo(newBalance) > 0) {
+                card.setMinimumPayment(newBalance);
+            }
+
+            // Add reward points (assuming 1 point per every 10 dollars spent)
+            int rewardPoints = paymentAmount.divide(BigDecimal.valueOf(10), RoundingMode.DOWN).intValue();
+            card.setRewardPoints(card.getRewardPoints() + rewardPoints);
+
+            cardRepository.save(card);
+
+            paymentDTO.setPaymentAmount(paymentAmount);
+            paymentDTO.setPaymentStatus("Processed");
+            paymentDTO.setVerificationReason("Payment processed successfully");
+            return paymentDTO;
+        } else {
+            // If no payment amount is provided, simply return the current state of the payment
+            paymentDTO.setVerificationReason("No payment amount provided");
+            paymentDTO.setPaymentStatus("Failed");
+            return paymentDTO;
+        }
     }
 
     private CardDTO mapToCardDTO(Card card) {
@@ -222,7 +183,7 @@ public class CardService {
         CardDTO cardDTO = new CardDTO();
         cardDTO.setCreditLimit(verificationResult.getRecommendedCreditLimit());
         cardDTO.setApproved(verificationResult.isApproved());
-        cardDTO.setVerificationReason(verificationResult.getReason());
+//        cardDTO.setVerificationReason(verificationResult.getReason());
 
         return cardDTO;
     }

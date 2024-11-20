@@ -33,9 +33,6 @@ public class CardDTO {
     @JsonProperty("recommended_credit_limit")
     private double recommendedCreditLimit;
 
-    @JsonProperty("result")
-    private String reason;
-
     @ManyToOne
     @JsonProperty("customer_id")
     private Customer customer;
@@ -120,10 +117,6 @@ public class CardDTO {
 
     public void setRecommendedCreditLimit(double recommendedCreditLimit) {
         this.recommendedCreditLimit = recommendedCreditLimit;
-    }
-
-    public String getReason() {
-        return reason;
     }
 
     public int getRewardPoints() {

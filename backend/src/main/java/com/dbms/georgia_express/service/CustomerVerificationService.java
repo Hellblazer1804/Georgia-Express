@@ -18,27 +18,23 @@ public class CustomerVerificationService {
     public Card verifyCustomerForCreditCard(Customer customer) {
         // 1. Age Verification
         if (!isCustomerAboveMinimumAge(customer.getDateOfBirth())) {
-            return new Card(false,
-                    "Customer must be at least " + MINIMUM_AGE + " years old", 0);
+            return new Card(false, 0);
         }
 
         // 2. SSN Verification
         if (!isValidSSN(customer.getSsn())) {
-            return new Card(false,
-                    "Invalid SSN format", 0);
+            return new Card(false, 0);
         }
 
         // 3. Credit Score Verification
         if (customer.getCreditScore() < MINIMUM_CREDIT_SCORE) {
-            return new Card(false,
-                    "Credit score must be at least " + MINIMUM_CREDIT_SCORE, 0);
+            return new Card(false, 0);
         }
 
         // 4. Calculate Credit Limit using customer's salary and credit score
         double creditLimit = calculateCreditLimit(customer.getSalary(), customer.getCreditScore());
 
-        return new Card(true,
-                "Customer approved for credit card", creditLimit);
+        return new Card(true, creditLimit);
     }
 
     private boolean isCustomerAboveMinimumAge(String dateOfBirth) {
