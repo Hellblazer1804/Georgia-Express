@@ -1,0 +1,9 @@
+INSERT INTO inventory (item_name, cost) VALUES ('Laptop', 1200);
+INSERT INTO inventory (item_name, cost) VALUES ('Smartphone', 800);
+INSERT INTO inventory (item_name, cost) VALUES ('Tablet', 400);
+INSERT INTO inventory (item_name, cost) VALUES ('Headphones', 200);
+INSERT INTO inventory (item_name, cost) VALUES ('Smartwatch', 250);
+INSERT INTO inventory (item_name, cost) VALUES ('Camera', 600);
+INSERT INTO inventory (item_name, cost) VALUES ('Printer', 150);
+INSERT INTO inventory (item_name, cost) VALUES ('Monitor', 300);
+INSERT INTO inventory (item_name, cost) VALUES ('Keyboard', 100);

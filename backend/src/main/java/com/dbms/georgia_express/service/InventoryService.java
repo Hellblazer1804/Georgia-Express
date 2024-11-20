@@ -43,4 +43,5 @@ public class InventoryService {
 
         inventoryRepo.delete(inventory);
     }
+
 }

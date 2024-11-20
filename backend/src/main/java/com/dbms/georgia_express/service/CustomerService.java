@@ -1,6 +1,7 @@
 package com.dbms.georgia_express.service;
 
 
+import com.dbms.georgia_express.exception.NotFoundException;
 import com.dbms.georgia_express.model.Customer;
 import com.dbms.georgia_express.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class CustomerService {
 
     public Customer updateCustomer(int id, Customer customerDetails) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));
 
         customer.setName(customerDetails.getName());
         customer.setEmail(customerDetails.getEmail());
@@ -46,7 +47,7 @@ public class CustomerService {
 
     public void deleteCustomer(int id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));
 
         customerRepository.delete(customer);
     }
