@@ -1,6 +1,8 @@
 package com.dbms.georgia_express.service;
 
 import com.dbms.georgia_express.dto.PaymentDTO;
+import com.dbms.georgia_express.exception.BadRequestException;
+import com.dbms.georgia_express.exception.NotFoundException;
 import com.dbms.georgia_express.model.Customer;
 import com.dbms.georgia_express.model.Card;
 import com.dbms.georgia_express.dto.CardDTO;
@@ -32,7 +34,7 @@ public class CardService {
 
     public CardDTO processCreditCardApplication(Long customerId) {
         Customer customer = customerRepository.findById(Math.toIntExact(customerId))
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
 
         Card verificationResult = verificationService.verifyCustomerForCreditCard(customer);
         return mapToDTOFromVerification(verificationResult);
@@ -40,7 +42,7 @@ public class CardService {
 
     public CardDTO generateCreditCard(Long customerId) {
         Customer customer = customerRepository.findById(Math.toIntExact(customerId))
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
 
         Card verificationResult = verificationService.verifyCustomerForCreditCard(customer);
 
@@ -93,7 +95,10 @@ public class CardService {
 
     public CardDTO updateCardBalance(Long cardId, BigDecimal newBalance) {
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() -> new NotFoundException("Card not found"));
+        if (newBalance.compareTo(BigDecimal.valueOf(card.getCreditLimit())) > 0) {
+            throw new BadRequestException("Credit limit exceeded. Transaction failed");
+        }
         card.setCardBalance(newBalance);
         Card updatedCard = cardRepository.save(card);
         return mapToCardDTO(updatedCard);
@@ -101,7 +106,7 @@ public class CardService {
 
     public CardDTO updateMinimumPayment(Long cardId, BigDecimal minimumPayment) {
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() -> new NotFoundException("Card not found"));
         card.setMinimumPayment(minimumPayment);
         Card updatedCard = cardRepository.save(card);
         return mapToCardDTO(updatedCard);
@@ -109,7 +114,7 @@ public class CardService {
 
     public CardDTO addRewardPoints(Long cardId, int points) {
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() -> new NotFoundException("Card not found"));
         card.setRewardPoints(card.getRewardPoints() + points);
         Card updatedCard = cardRepository.save(card);
         return mapToCardDTO(updatedCard);
@@ -118,6 +123,13 @@ public class CardService {
     public CardDTO findByCardNumber(String cardId) {
         Card card = cardRepository.findByCardNumber(cardId);
         return mapToCardDTO(card);
+    }
+
+    public Card findByCustomerId(Integer customerId) {
+        Customer customer = customerRepository.findById(Math.toIntExact(customerId))
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
+        Card card = cardRepository.findByCustomer(customer);
+        return card;
     }
 
     public void deleteCard(String cardNumber) {
