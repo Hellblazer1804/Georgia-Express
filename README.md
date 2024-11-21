@@ -18,9 +18,10 @@ Make sure the following is installed.
 3. To setup the database:
    - `cd docker`
    - `docker-compose up -d`
-4. In the `backend` directory, run `mvn clean install` to initialize
+4. In the `backend` directory, run `mvn clean install -DskipTests` to initialize
 5. Run the application, run the java file `GeorgiaExpressApplication.java`
 6. To setup the Data Source on IntelliJ , click the database logo on the right hand corner of IntelliJ
 7. Select the add logo here, ![datasource_field](images/image1.png)
 8. This is how the adding look like: ![datasource_add](images/image2.png)
 9. Get the password from the docker file and the database should appear
+10. To generate the OpenAPI spec, run the following url after starting the Spring Application: http://localhost:8080/swagger-ui/index.html
