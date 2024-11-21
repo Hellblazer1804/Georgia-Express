@@ -5,6 +5,7 @@ import com.dbms.georgia_express.dto.TransactionRequest;
 import com.dbms.georgia_express.dto.TransactionResponse;
 import com.dbms.georgia_express.model.Transaction;
 import com.dbms.georgia_express.service.TransactionService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @PostMapping("/process")
+    @Operation(summary = "Process a transaction based on the username")
     public ResponseEntity<TransactionResponse> processTransaction(@RequestBody TransactionRequest request) {
         try {
             Transaction transaction = transactionService.processTransaction(request.getUsername());
@@ -40,6 +42,7 @@ public class TransactionController {
     }
 
     @GetMapping("/history")
+    @Operation(summary = "Gets the transaction history for a customer")
     public ResponseEntity<List<TransactionDTO>> getTransactionHistory(@RequestHeader String username) {
         List<Transaction> transactions = transactionService.getTransactionHistory(username);
         List<TransactionDTO> transactionDTOs = transactions.stream()

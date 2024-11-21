@@ -4,6 +4,7 @@ import com.dbms.georgia_express.dto.PaymentDTO;
 import com.dbms.georgia_express.model.Card;
 import com.dbms.georgia_express.dto.CardDTO;
 import com.dbms.georgia_express.service.CardService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,18 +21,21 @@ public class CardController {
     private CardService cardService;
 
     @PostMapping("/{customerId}/verify-credit-card")
+    @Operation(summary = "Verifies whether the customer is eligible for a credit card")
     public ResponseEntity<CardDTO> verifyCreditCardEligibility(@PathVariable Long customerId) {
         CardDTO result = cardService.processCreditCardApplication(customerId);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/{customerId}/generate")
+    @Operation(summary = "Generates a credit card based on customerId")
     public ResponseEntity<CardDTO> generateCreditCard(@PathVariable Long customerId) {
         CardDTO generatedCard = cardService.generateCreditCard(customerId);
         return new ResponseEntity<>(generatedCard, HttpStatus.CREATED);
     }
 
     @GetMapping("/{cardNumber}")
+    @Operation(summary = "Gets information for a credit card")
     public ResponseEntity<CardDTO> getCard(@PathVariable Long cardNumber) {
         CardDTO card = cardService.findByCardNumber(Long.toString(cardNumber));
         if (card == null) {
@@ -41,6 +45,7 @@ public class CardController {
     }
 
     @PutMapping("/{cardNumber}/balance")
+    @Operation(summary = "Update a credit card balance")
     public ResponseEntity<CardDTO> updateCardBalance(
             @PathVariable Long cardNumber,
             @RequestParam java.math.BigDecimal balance) {
@@ -49,6 +54,7 @@ public class CardController {
     }
 
     @PutMapping("/{cardNumber}/minimum-payment")
+    @Operation(summary = "Update minimum payment")
     public ResponseEntity<CardDTO> updateMinimumPayment(
             @PathVariable Long cardNumber,
             @RequestParam("amount") BigDecimal minimumPayment) {  // specify parameter name
@@ -57,6 +63,7 @@ public class CardController {
     }
 
     @PutMapping("/{cardId}/reward_points")
+    @Operation(summary = "Add reward points")
     public ResponseEntity<CardDTO> addRewardPoints(
             @PathVariable Long cardId,
             @RequestParam int points) {
@@ -65,6 +72,7 @@ public class CardController {
     }
 
     @DeleteMapping("/{cardNumber}")
+    @Operation(summary = "Deletes a credit card")
     public ResponseEntity<Void> deleteCard(@PathVariable String cardNumber) {
         // Optional: Validate card number format
         if (!isValidCardNumber(cardNumber)) {
@@ -75,6 +83,7 @@ public class CardController {
     }
 
     @PostMapping("/{cardNumber}/payment")
+    @Operation(summary = "End point to make a credit card payment")
     public ResponseEntity<PaymentDTO> makePayment( @PathVariable String cardNumber,
                                                    @RequestParam BigDecimal paymentAmount) {
         PaymentDTO paymentResult = cardService.makePayment(cardNumber, paymentAmount);
