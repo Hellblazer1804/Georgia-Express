@@ -49,8 +49,8 @@ export default function RegistrationForm() {
 
         if (response.ok) {
             const responseData = await response.json();
-            const customerId = responseData.id;
-            router.push(`./createAccount?id=1`);
+            const customerId = responseData.customerId;
+            router.push(`./createAccount?id=${customerId}`);
 
 
 

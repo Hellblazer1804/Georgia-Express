@@ -17,20 +17,19 @@ interface Customer {
 }
 
 interface Card {
-    cardNumber: string;
-    expiryDate: string;
-    creditLimit: number;
-    cardStatus: string;
+    card_number: string;
+    expiration_date: string;
+    recommended_credit_limit: number;
+    card_status: string;
     approved: boolean;
-    cardBalance: number;
-    minimumPayment: number;
-    rewardPoints: number;
+    card_balance: number;
+    minimum_payment: number;
+    reward_points: number;
 }
 
 export default function AccountOverview() {
     const searchParams = useSearchParams();
-    const customerId = searchParams.get("customerId");
-    const cardNumber = searchParams.get("cardNumber")
+    const customerId = searchParams.get("id");
     const [customer, setCustomer] = useState<Customer | null>(null);
     const [card, setCard] = useState<Card | null>(null);
 
@@ -46,13 +45,8 @@ export default function AccountOverview() {
                 const customerData = await customerResponse.json();
                 setCustomer(customerData);
 
-                const generateCardResponse = await fetch(`http://localhost:8080/api/card/${customerId}/generate`);
-                if (!generateCardResponse.ok) {
-                    throw new Error(`Failed to generate card: ${generateCardResponse.status}`);
-                }
 
-
-                const cardResponse = await fetch(`http://localhost:8080/api/card/${customerId}`);
+                const cardResponse = await fetch(`http://localhost:8080/api/card/customer/${customerId}`);
                 if (!cardResponse.ok) {
                     throw new Error(`Failed to fetch card: ${cardResponse.status}`);
                 }
@@ -86,14 +80,13 @@ export default function AccountOverview() {
             <h2 className={style.title}>Card Information</h2>
             {card ? (
                 <div className={style.card}>
-                    <p><strong>Card Number:</strong> **** **** **** {card.cardNumber.slice(-4)}</p>
-                    <p><strong>Expiry Date:</strong> {card.expiryDate}</p>
-                    <p><strong>Credit Limit:</strong> ${card.creditLimit.toLocaleString()}</p>
-                    <p><strong>Card Balance:</strong> ${card.cardBalance.toLocaleString()}</p>
-                    <p><strong>Minimum Payment:</strong> ${card.minimumPayment.toLocaleString()}</p>
-                    <p><strong>Reward Points:</strong> {card.rewardPoints}</p>
-                    <p><strong>Status:</strong> {card.cardStatus}</p>
-                    <p><strong>Approved:</strong> {card.approved ? "Yes" : "No"}</p>
+                    <p><strong>Card Number:</strong> **** **** **** {card.card_number.slice(-4)}</p>
+                    <p><strong>Expiry Date:</strong> {card.expiration_date}</p>
+                    <p><strong>Credit Limit:</strong> ${card.recommended_credit_limit.toLocaleString()}</p>
+                    <p><strong>Card Balance:</strong> ${card.card_balance.toLocaleString()}</p>
+                    <p><strong>Minimum Payment:</strong> ${card.minimum_payment.toLocaleString()}</p>
+                    <p><strong>Reward Points:</strong> {card.reward_points}</p>
+                    <p><strong>Status:</strong> {card.card_status}</p>
                 </div>
             ) : (
                 <p>Loading card information...</p>

@@ -125,6 +125,13 @@ public class CardService {
         return mapToCardDTO(card);
     }
 
+    public CardDTO findDTOByCustomerId(Integer customerId) {
+        Customer customer = customerRepository.findById(Math.toIntExact(customerId))
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
+        Card card = cardRepository.findByCustomer(customer);
+        return mapToCardDTO(card);
+    }
+
     public Card findByCustomerId(Integer customerId) {
         Customer customer = customerRepository.findById(Math.toIntExact(customerId))
                 .orElseThrow(() -> new NotFoundException("Customer not found"));

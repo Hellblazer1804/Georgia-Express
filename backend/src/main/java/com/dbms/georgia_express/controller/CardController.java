@@ -94,4 +94,12 @@ public class CardController {
         return cardNumber != null && cardNumber.matches("\\d{16}"); // Validates 16-digit card number
     }
 
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<CardDTO> getCardByCustomerId(@PathVariable Integer customerId) {
+        CardDTO card = cardService.findDTOByCustomerId(customerId);
+        if (card == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(card);
+    }
 }
