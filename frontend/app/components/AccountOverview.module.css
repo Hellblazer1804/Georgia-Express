@@ -1,0 +1,43 @@
+.container {
+    padding: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #D32F2F;
+}
+
+.cardInfo {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+}
+
+.transactionsTitle {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: #D32F2F;
+}
+
+.transactionsList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.transactionItem {
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}

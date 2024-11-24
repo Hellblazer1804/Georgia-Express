@@ -1,0 +1,90 @@
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    background-color: #D32F2F;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25%;
+    padding: 20px;
+}
+
+.logo {
+    font-size: 2.5em;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.formContainer {
+    flex: 1;
+    padding: 40px;
+}
+
+.formTitle {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.inputGroup {
+    display: flex;
+    gap: 15px;
+}
+
+.inputGroup input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.inputGroupSingle input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.submitButton {
+    background-color: #D32F2F;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.submitButton:hover {
+    background-color: #B71C1C;
+}
+
+.homeButton button {
+    background-color: #D32F2F;
+    margin-top: 10em;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background-color 0.3s;
+    padding: 5px;
+}
+
+.homeButton button a {
+    color: white;
+}
+
+.homeButton button:hover {
+    background-color: #B71C1C;
+}
