@@ -1,5 +1,6 @@
 package com.dbms.georgia_express.service;
 
+import com.dbms.georgia_express.exception.BadRequestException;
 import com.dbms.georgia_express.model.Customer;
 import com.dbms.georgia_express.model.Card;
 import org.springframework.stereotype.Service;
@@ -18,17 +19,17 @@ public class CustomerVerificationService {
     public Card verifyCustomerForCreditCard(Customer customer) {
         // 1. Age Verification
         if (!isCustomerAboveMinimumAge(customer.getDateOfBirth())) {
-            return new Card(false, 0);
+            throw new BadRequestException("Customer needs to be at least 18");
         }
 
         // 2. SSN Verification
         if (!isValidSSN(customer.getSsn())) {
-            return new Card(false, 0);
+            throw new BadRequestException("Invalid SSN");
         }
 
         // 3. Credit Score Verification
         if (customer.getCreditScore() < MINIMUM_CREDIT_SCORE) {
-            return new Card(false, 0);
+            throw new BadRequestException("Credit score must be at least 500");
         }
 
         // 4. Calculate Credit Limit using customer's salary and credit score
