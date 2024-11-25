@@ -78,7 +78,7 @@ export default function Store() {
     return (
         <div className={style.container}>
             <div className={style.cartLink}>
-                <button onClick={() => router.push("/cart")}>Go to Cart</button>
+                <button onClick={() => router.push(`/cart?id=${customerId}&user=${customerUsername}`)}>Go to Cart</button>
             </div>
             <div className={style.gallery}>
                 {items.map((item) => (
