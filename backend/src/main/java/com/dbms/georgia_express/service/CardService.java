@@ -55,40 +55,22 @@ public class CardService {
         String cardNumber = generateCardNumber();
         String expiryDate = generateExpiryDate();
         int cvv = generateCVV();
-        Card newCard;
-        if(findByCustomerId(Math.toIntExact(customerId)).isEmpty()) {
-            newCard = new Card(
-                    cardNumber,
-                    expiryDate,
-                    cvv,
-                    verificationResult.getRecommendedCreditLimit(),
-                    "Active",
-                    true,
-                    "Approved",
-                    verificationResult.getRecommendedCreditLimit(),
-                    customer,
-                    BigDecimal.ZERO,// Initial minimum payment
-                    BigDecimal.valueOf(100), // Initial balance
-                    0 // Initial reward points
-            );
-        } else {
-            newCard = new Card(
-                    cardNumber,
-                    expiryDate,
-                    cvv,
-                    verificationResult.getRecommendedCreditLimit() * Math.pow(0.9,
-                            findByCustomerId(Math.toIntExact(customerId)).size()),
-                    "Active",
-                    true,
-                    "Approved",
-                    verificationResult.getRecommendedCreditLimit(),
-                    customer,
-                    BigDecimal.ZERO,// Initial minimum payment
-                    BigDecimal.valueOf(100), // Initial balance
-                    0 // Initial reward points
-            );
-        }
-
+        double recommendedCreditLimit = verificationResult.getRecommendedCreditLimit()
+                * Math.pow(0.9, findByCustomerId(Math.toIntExact(customerId)).size());
+        Card newCard = new Card(
+                cardNumber,
+                expiryDate,
+                cvv,
+                recommendedCreditLimit,
+                "Active",
+                true,
+                "Approved",
+                recommendedCreditLimit,
+                customer,
+                BigDecimal.ZERO,// Initial minimum payment
+                BigDecimal.valueOf(100), // Initial balance
+                0 // Initial reward points
+        );
 
         Card savedCard = cardRepository.save(newCard);
         return mapToCardDTO(savedCard);
