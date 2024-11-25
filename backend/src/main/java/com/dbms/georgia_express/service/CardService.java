@@ -125,6 +125,9 @@ public class CardService {
 
     public CardDTO findByCardNumber(String cardId) {
         Card card = cardRepository.findByCardNumber(cardId);
+        if (card == null) {
+            throw new NotFoundException("Card not found");
+        }
         return mapToCardDTO(card);
     }
 
