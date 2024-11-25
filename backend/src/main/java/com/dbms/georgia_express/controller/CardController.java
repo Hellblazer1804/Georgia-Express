@@ -96,6 +96,7 @@ public class CardController {
     }
 
     @GetMapping("/customer/{customerId}")
+    @Operation(summary = "Get the cards' information of a customer")
     public ResponseEntity<List<CardDTO>> getCardByCustomerId(@PathVariable Integer customerId) {
         List<CardDTO> card = cardService.findDTOByCustomerId(customerId);
         if (card == null) {
