@@ -6,8 +6,8 @@ import style from "./Store.module.css";
 import { useSearchParams } from "next/navigation";
 
 interface Inventory {
-    item_id: number;
-    item_name: string;
+    itemId: number;
+    itemName: string;
     cost: number;
 }
 
@@ -83,11 +83,11 @@ export default function Store() {
             <div className={style.gallery}>
                 {items.map((item) => (
                     <ItemCard
-                        key={item.item_id}
+                        key={item.itemId}
                         image=""
-                        title={item.item_name}
+                        title={item.itemName}
                         price={item.cost}
-                        onBuy={() => handleAddToCart(item.item_id)}
+                        onBuy={() => handleAddToCart(item.itemId)}
                     />
                 ))}
             </div>
