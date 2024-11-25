@@ -8,12 +8,15 @@ import com.dbms.georgia_express.model.CartItem;
 import com.dbms.georgia_express.model.CustomerLogin;
 import com.dbms.georgia_express.model.Transaction;
 import com.dbms.georgia_express.repositories.CustomerLoginRepository;
+import com.dbms.georgia_express.repositories.CustomerRepository;
 import com.dbms.georgia_express.repositories.TransactionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +35,10 @@ public class TransactionService {
 
     @Autowired
     private CustomerLoginRepository customerLoginRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
+    private CustomerService customerService;
 
     public Transaction processTransaction(String username, String cardNumber) {
         CustomerLogin customerLogin = customerLoginRepository.findById(username)
@@ -45,6 +52,11 @@ public class TransactionService {
         }
         cardService.updateCardBalance(Long.valueOf(card.getCardNumber()),
                 card.getCardBalance().add(totalAmount));
+        if (card.getCardBalance().divide(BigDecimal.valueOf(card.getCreditLimit()), MathContext.DECIMAL128)
+                .compareTo(BigDecimal.valueOf(0.30)) > 0) {
+            customerService.updateCreditScore(customerLogin.getCustomer().getCustomerId(),
+                    customerLogin.getCustomer().getCreditScore() - 20);
+        }
         Transaction transaction = new Transaction();
         transaction.setCustomerLogin(customerLogin);
         transaction.setAmount(totalAmount);

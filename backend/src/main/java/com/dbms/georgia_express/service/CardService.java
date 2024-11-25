@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +34,8 @@ public class CardService {
 
     @Autowired
     private CardRepository cardRepository;
+    @Autowired
+    private CustomerService customerService;
 
     public CardDTO processCreditCardApplication(Long customerId) {
         Customer customer = customerRepository.findById(Math.toIntExact(customerId))
@@ -176,6 +179,11 @@ public class CardService {
             // Add reward points (assuming 1 point per every 10 dollars spent)
             int rewardPoints = paymentAmount.divide(BigDecimal.valueOf(10), RoundingMode.DOWN).intValue();
             card.setRewardPoints(card.getRewardPoints() + rewardPoints);
+            if (card.getCardBalance().
+                    divide(BigDecimal.valueOf(card.getCreditLimit()), MathContext.DECIMAL128).compareTo(BigDecimal.valueOf(0.30)) <= 0) {
+                customerService.updateCreditScore(card.getCustomer().getCustomerId(),
+                        card.getCustomer().getCreditScore() + 5);
+            }
 
             cardRepository.save(card);
 
