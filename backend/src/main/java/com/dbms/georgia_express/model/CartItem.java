@@ -18,8 +18,20 @@ public class CartItem {
     @JoinColumn(name = "item_id", nullable = false)
     private Inventory item;
 
+
     @Column(name = "quantity", nullable = false)
     private int quantity;
+
+    @Column(name="cost", nullable = false)
+    private int cost;
+
+    public int getCost() {
+        return cost;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
 
     public Long getCartItemId() {
         return cartItemId;
