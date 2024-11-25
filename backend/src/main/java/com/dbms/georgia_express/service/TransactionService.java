@@ -40,7 +40,7 @@ public class TransactionService {
     @Autowired
     private CustomerService customerService;
 
-    public Transaction processTransaction(String username, String cardNumber) {
+    public Transaction processTransaction(String username, String cardNumber, int cvv) {
         CustomerLogin customerLogin = customerLoginRepository.findById(username)
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
 
@@ -49,6 +49,9 @@ public class TransactionService {
         CardDTO card = cardService.findByCardNumber(cardNumber);
         if (customerLogin.getCustomer().getCustomerId() != card.getCustomer().getCustomerId()) {
             throw new BadRequestException("Customer id mismatch");
+        }
+        if(card.getCvv() != cvv) {
+            throw new BadRequestException("CVV mismatch");
         }
         cardService.updateCardBalance(Long.valueOf(card.getCardNumber()),
                 card.getCardBalance().add(totalAmount));
