@@ -27,10 +27,12 @@ export default function LoginForm() {
 
             if (response.ok) {
                 const data = await response.json();
-                const customerId = 1;
+                const customerId = data.customer.customerId;
+                console.log("customerId", customerId);
+                console.log("data", data);
 
                 if (customerId) {
-                    router.push(`./overview?customerId=${customerId}`);
+                    router.push(`./overview?id=${customerId}`);
                 } else {
                     alert("Login successful, but customer information is missing.");
                 }
