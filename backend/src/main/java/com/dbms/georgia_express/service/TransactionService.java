@@ -1,5 +1,7 @@
 package com.dbms.georgia_express.service;
 
+import com.dbms.georgia_express.dto.CardDTO;
+import com.dbms.georgia_express.exception.BadRequestException;
 import com.dbms.georgia_express.exception.NotFoundException;
 import com.dbms.georgia_express.model.Card;
 import com.dbms.georgia_express.model.CartItem;
@@ -31,13 +33,16 @@ public class TransactionService {
     @Autowired
     private CustomerLoginRepository customerLoginRepository;
 
-    public Transaction processTransaction(String username) {
+    public Transaction processTransaction(String username, String cardNumber) {
         CustomerLogin customerLogin = customerLoginRepository.findById(username)
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
 
         List<CartItem> cartItems = cartService.getCart(username);
         BigDecimal totalAmount = getTotalAmount(cartItems);
-        Card card = cardService.findByCustomerId(customerLogin.getCustomer().getCustomerId());
+        CardDTO card = cardService.findByCardNumber(cardNumber);
+        if (customerLogin.getCustomer().getCustomerId() != card.getCustomer().getCustomerId()) {
+            throw new BadRequestException("Customer id mismatch");
+        }
         cardService.updateCardBalance(Long.valueOf(card.getCardNumber()),
                 card.getCardBalance().add(totalAmount));
         Transaction transaction = new Transaction();

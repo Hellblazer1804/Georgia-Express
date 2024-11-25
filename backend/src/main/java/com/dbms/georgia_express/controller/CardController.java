@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/card")
@@ -95,8 +96,8 @@ public class CardController {
     }
 
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<CardDTO> getCardByCustomerId(@PathVariable Integer customerId) {
-        CardDTO card = cardService.findDTOByCustomerId(customerId);
+    public ResponseEntity<List<CardDTO>> getCardByCustomerId(@PathVariable Integer customerId) {
+        List<CardDTO> card = cardService.findDTOByCustomerId(customerId);
         if (card == null) {
             return ResponseEntity.notFound().build();
         }

@@ -25,7 +25,7 @@ public class TransactionController {
     @Operation(summary = "Process a transaction based on the username")
     public ResponseEntity<TransactionResponse> processTransaction(@RequestBody TransactionRequest request) {
         try {
-            Transaction transaction = transactionService.processTransaction(request.getUsername());
+            Transaction transaction = transactionService.processTransaction(request.getUsername(),request.getCardNumber());
             TransactionDTO transactionDTO = convertToDTO(transaction);
             TransactionResponse response = new TransactionResponse("Transaction processed successfully", transactionDTO);
             return ResponseEntity.ok(response);

@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
@@ -125,18 +127,22 @@ public class CardService {
         return mapToCardDTO(card);
     }
 
-    public CardDTO findDTOByCustomerId(Integer customerId) {
+    public List<CardDTO> findDTOByCustomerId(Integer customerId) {
         Customer customer = customerRepository.findById(Math.toIntExact(customerId))
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
-        Card card = cardRepository.findByCustomer(customer);
-        return mapToCardDTO(card);
+        List<Card> card = cardRepository.findByCustomer(customer);
+        List<CardDTO> cardDTOList = new ArrayList<>();
+        for (Card c : card) {
+            cardDTOList.add(mapToCardDTO(c));
+        }
+        return cardDTOList;
     }
 
-    public Card findByCustomerId(Integer customerId) {
+    public List<Card> findByCustomerId(Integer customerId) {
         Customer customer = customerRepository.findById(Math.toIntExact(customerId))
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
-        Card card = cardRepository.findByCustomer(customer);
-        return card;
+        List<Card> cards = cardRepository.findByCustomer(customer);
+        return cards;
     }
 
     public void deleteCard(String cardNumber) {
