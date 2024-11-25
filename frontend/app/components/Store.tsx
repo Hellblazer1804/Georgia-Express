@@ -1,19 +1,23 @@
 "use client"
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import ItemCard from "./ItemCard";
 import {useRouter} from "next/navigation";
 import style from "./Store.module.css";
+import { useSearchParams } from "next/navigation";
 
-interface InventoryItem {
-    itemId: number;
-    itemName: string;
+interface Inventory {
+    item_id: number;
+    item_name: string;
     cost: number;
 }
 
 export default function Store() {
-    const [items, setItems] = useState<InventoryItem[]>([]);
+    const [items, setItems] = useState<Inventory[]>([]);
     const [cartId, setCartId] = useState<number | null>(null);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const customerId = searchParams.get("id");
+    const customerUsername = searchParams.get("user");
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -22,7 +26,7 @@ export default function Store() {
                 if (!response.ok) {
                     throw new Error("Failed to fetch inventory items");
                 }
-                const data: InventoryItem[] = await response.json();
+                const data: Inventory[] = await response.json();
                 setItems(data);
             } catch (error) {
                 console.error("Error fetching inventory items:", error);
@@ -43,10 +47,22 @@ export default function Store() {
             return;
         }
 
+        const Inventory = {
+            item_id: itemId,
+            quantity: 1
+        };
+
         try {
             const response = await fetch(
-                `http://localhost:8080/api/cart/${cartId}/addItem?itemId=${itemId}&quantity=1`,
-                { method: "POST" }
+                `http://localhost:8080/api/cart/add`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "username": customerUsername || "",
+                    },
+                    body: JSON.stringify(Inventory),
+                }
             );
             if (response.ok) {
                 alert("Item added to cart!");
@@ -67,11 +83,11 @@ export default function Store() {
             <div className={style.gallery}>
                 {items.map((item) => (
                     <ItemCard
-                        key={item.itemId}
+                        key={item.item_id}
                         image=""
-                        title={item.itemName}
+                        title={item.item_name}
                         price={item.cost}
-                        onBuy={() => handleAddToCart(item.itemId)}
+                        onBuy={() => handleAddToCart(item.item_id)}
                     />
                 ))}
             </div>

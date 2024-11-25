@@ -4,8 +4,8 @@ import { useCart } from "../CartContext";
 import style from "./Cart.module.css";
 
 interface CartItem {
-    cartItemId: number;
-    itemName: string;
+    cart_item_id: number;
+    item_name: string;
     cost: number;
     quantity: number;
 }
@@ -75,8 +75,8 @@ export default function Cart() {
                 <div>
                     <ul>
                         {cartItems.map((item) => (
-                            <li key={item.cartItemId}>
-                                {item.itemName} - ${item.cost.toFixed(2)} x {item.quantity}
+                            <li key={item.cart_item_id}>
+                                {item.item_name} - ${item.cost.toFixed(2)} x {item.quantity}
                             </li>
                         ))}
                     </ul>
