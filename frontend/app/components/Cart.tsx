@@ -1,11 +1,11 @@
-"use client"
-import React, {useEffect, useState} from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import style from "./Cart.module.css";
-import {useSearchParams} from "next/navigation";
-import {useRouter} from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface CartItem {
-    cart_item_id: number;
+    item_id: number;
     item_name: string;
     cart_item_cost: number;
     quantity: number;
@@ -39,13 +39,44 @@ export default function Cart() {
                 setCartItems(cartItems);
                 setTotalCost(totalCost);
             } catch (error) {
-                router.push(`/overview?id=${customerId}&user=${customerUsername}`);
                 console.error("Error fetching cart items:", error);
             }
         };
 
         fetchCartItems();
     }, [customerUsername]);
+
+    const handleRemoveItem = async (itemId: number) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/cart/remove/${itemId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "username": customerUsername || "",
+                },
+            });
+
+            if (response.ok) {
+                // Update the cart state to remove the item
+                const updatedCartItems = cartItems.filter((item) => item.item_id !== itemId);
+                setCartItems(updatedCartItems);
+
+                // Recalculate the total cost
+                const updatedTotalCost = updatedCartItems.reduce(
+                    (acc, item) => acc + item.cart_item_cost * item.quantity,
+                    0
+                );
+                setTotalCost(updatedTotalCost);
+
+                alert("Item removed from cart.");
+            } else {
+                alert("Failed to remove item from cart.");
+            }
+        } catch (error) {
+            console.error("Error removing item:", error);
+            alert("An error occurred. Please try again.");
+        }
+    };
 
     const handleCheckout = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // Prevent the form from reloading the page
@@ -93,23 +124,24 @@ export default function Cart() {
                     <p>Your cart is empty.</p>
                 ) : (
                     cartItems.map((item, index) => (
-                        <div key={index}>
+                        <div key={index} className={style.cartItem}>
                             {item.item_name} - ${item.cart_item_cost} x {item.quantity}
+                            <button onClick={() => handleRemoveItem(item.item_id)}>Remove</button>
                         </div>
                     ))
                 )}
                 <div className={style.totalCost}>
-                    Total: ${totalCost}
+                    Total: ${totalCost.toFixed(2)}
                 </div>
                 <a href={`/store?id=${customerId}&user=${customerUsername}`}>Back to store</a>
             </div>
             <div className={style.checkout}>
                 <form onSubmit={handleCheckout}>
                     <div className={style.inputBox}>
-                        <input name="creditCard" type="text" placeholder="Credit Card Number" required/>
+                        <input name="creditCard" type="text" placeholder="Credit Card Number" required />
                     </div>
                     <div className={style.inputBox}>
-                        <input name={"cvv"} type="text" placeholder="CVV" required/>
+                        <input name={"cvv"} type="text" placeholder="CVV" required />
                     </div>
                     <button type="submit">Checkout</button>
                 </form>
@@ -117,3 +149,4 @@ export default function Cart() {
         </div>
     );
 }
+

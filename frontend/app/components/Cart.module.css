@@ -91,3 +91,15 @@
 .checkout button:hover {
     background-color: #B71C1C;
 }
+
+.cartItem button {
+    background-color: #D32F2F;
+    color: white;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: background-color 0.3s;
+    margin-left: 10px;
+}
