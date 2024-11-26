@@ -164,7 +164,6 @@ export default function RegistrationForm() {
                         <a href='./login'>Login</a>
                     </button>
                 </div>
-                <a href='./overview'>Account overview</a>
             </div>
 
         </div>

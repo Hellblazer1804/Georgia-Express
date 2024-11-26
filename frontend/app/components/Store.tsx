@@ -77,7 +77,8 @@ export default function Store() {
 
     return (
         <div className={style.container}>
-            <div className={style.cartLink}>
+            <div className={style.navButtons}>
+                <button onClick={() => router.push(`/overview?id=${customerId}&user=${customerUsername}`)}>Home</button>
                 <button onClick={() => router.push(`/cart?id=${customerId}&user=${customerUsername}`)}>Go to Cart</button>
             </div>
             <div className={style.gallery}>

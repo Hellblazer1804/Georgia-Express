@@ -17,6 +17,7 @@ export default function Cart() {
     const customerId = searchParams.get("id");
     const customerUsername = searchParams.get("user");
     const [totalCost, setTotalCost] = useState<number>(0);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchCartItems = async () => {
@@ -32,12 +33,13 @@ export default function Cart() {
                     throw new Error("Failed to fetch cart items");
                 }
                 const data = await response.json();
-                const cartItems : CartItem[] = data.cartItems;
+                const cartItems: CartItem[] = data.cartItems;
                 const totalCost = data.cart_amount;
                 console.log("cart items", cartItems);
                 setCartItems(cartItems);
                 setTotalCost(totalCost);
             } catch (error) {
+                router.push(`/overview?id=${customerId}&user=${customerUsername}`);
                 console.error("Error fetching cart items:", error);
             }
         };
@@ -45,13 +47,18 @@ export default function Cart() {
         fetchCartItems();
     }, [customerUsername]);
 
-    const handleCheckout = async () => {
-        const creditCard = (document.querySelector('input[name="creditCard"]') as HTMLInputElement).value;
-        const cvv = (document.querySelector('input[name="cvv"]') as HTMLInputElement).value;
+    const handleCheckout = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // Prevent the form from reloading the page
+
+        // Access form data using the FormData API
+        const formData = new FormData(event.currentTarget);
+        const creditCard = formData.get("creditCard") as string;
+        const cvv = formData.get("cvv") as string;
+
         const cardInfo = {
-            card_number: creditCard.toString(),
+            card_number: creditCard,
             cvv: parseInt(cvv, 10),
-        }
+        };
 
         try {
             const response = await fetch(`http://localhost:8080/api/transaction/process`, {
@@ -62,50 +69,51 @@ export default function Cart() {
                 },
                 body: JSON.stringify(cardInfo),
             });
-            console.log("response", response);
+
             if (response.ok) {
                 alert("Checkout successful!");
-                useRouter().push(`/overview?id=${customerId}&user=${customerUsername}`);
+                router.push(`/overview?id=${customerId}&user=${customerUsername}`);
             } else {
                 const errorData = await response.json();
                 console.error("Error response:", errorData);
-                alert(errorData);
+                alert(errorData.message || "Checkout failed.");
             }
         } catch (error) {
-            alert(error);
             console.error("Error checking out:", error);
+            alert("An error occurred. Please try again.");
+            router.push(`/overview?id=${customerId}&user=${customerUsername}`);
         }
     };
 
     return (
         <div className={style.cartPage}>
-        <div className={style.cart}>
-            <h1>Your Cart</h1>
-            {cartItems.length === 0 ? (
-                <p>Your cart is empty.</p>
-            ) : (
-                cartItems.map((item, index) => (
-                    <div key={index}>
-                        {item.item_name} - ${item.cart_item_cost} x {item.quantity}
-                    </div>
-                ))
-            )}
-            <div className={style.totalCost}>
-                Total: ${totalCost}
+            <div className={style.cart}>
+                <h1>Your Cart</h1>
+                {cartItems.length === 0 ? (
+                    <p>Your cart is empty.</p>
+                ) : (
+                    cartItems.map((item, index) => (
+                        <div key={index}>
+                            {item.item_name} - ${item.cart_item_cost} x {item.quantity}
+                        </div>
+                    ))
+                )}
+                <div className={style.totalCost}>
+                    Total: ${totalCost}
+                </div>
+                <a href={`/store?id=${customerId}&user=${customerUsername}`}>Back to store</a>
             </div>
-            <a href={`/store?id=${customerId}&user=${customerUsername}`}>Back to store</a>
-        </div>
             <div className={style.checkout}>
                 <form onSubmit={handleCheckout}>
                     <div className={style.inputBox}>
-                        <input name="creditCard" type="text" placeholder="Credit Card Number" required />
+                        <input name="creditCard" type="text" placeholder="Credit Card Number" required/>
                     </div>
                     <div className={style.inputBox}>
-                        <input name={"cvv"} type="text" placeholder="CVV" required />
+                        <input name={"cvv"} type="text" placeholder="CVV" required/>
                     </div>
                     <button type="submit">Checkout</button>
                 </form>
             </div>
-            </div>
+        </div>
     );
 }
