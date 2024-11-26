@@ -1,0 +1,118 @@
+.container {
+    padding: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #D32F2F;
+}
+
+.cardInfo {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+}
+
+.transactionsTitle {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: #D32F2F;
+}
+
+.transactionsList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.transactionItem {
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.line {
+    border-bottom: 1px solid #ddd;
+    margin: 20px 0;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 20px;
+}
+
+.buttons button {
+    background-color: #D32F2F;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.paymentForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.paymentForm input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.paymentForm button {
+    background-color: #D32F2F;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+    margin-left: 5px;
+}
+
+.container {
+    position: relative;
+    padding: 20px;
+}
+
+.topBar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.signOutButton {
+    background-color: #D32F2F;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.signOutButton:hover {
+    background-color: #B71C1C;
+}
+

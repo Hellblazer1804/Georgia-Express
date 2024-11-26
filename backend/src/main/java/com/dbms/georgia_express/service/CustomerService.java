@@ -45,6 +45,14 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
+    public void updateCreditScore(int id, int creditScore) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));
+
+        customer.setCreditScore(creditScore);
+        customerRepository.save(customer);
+    }
+
     public void deleteCustomer(int id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));

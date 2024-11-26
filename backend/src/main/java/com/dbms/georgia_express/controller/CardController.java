@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/card")
@@ -94,4 +95,13 @@ public class CardController {
         return cardNumber != null && cardNumber.matches("\\d{16}"); // Validates 16-digit card number
     }
 
+    @GetMapping("/customer/{customerId}")
+    @Operation(summary = "Get the cards' information of a customer")
+    public ResponseEntity<List<CardDTO>> getCardByCustomerId(@PathVariable Integer customerId) {
+        List<CardDTO> card = cardService.findDTOByCustomerId(customerId);
+        if (card == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(card);
+    }
 }

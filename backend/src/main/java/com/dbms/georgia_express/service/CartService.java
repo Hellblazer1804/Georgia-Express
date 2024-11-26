@@ -53,6 +53,7 @@ public class CartService {
                 });
 
         cartItem.setQuantity(cartItem.getQuantity() + quantity);
+        cartItem.setCost(calculateCartItemCost(cartItem));
         cartItemRepository.save(cartItem);
 
         // Update cart amount
@@ -119,5 +120,10 @@ public class CartService {
         BigDecimal cartAmount = getTotalAmount(cart.getCartItems());
         cart.setCartAmount(cartAmount);
         cartRepository.save(cart);
+    }
+
+    private int calculateCartItemCost(CartItem cartItem) {
+        int cartItemCost = cartItem.getQuantity() * cartItem.getItem().getCost();
+        return cartItemCost;
     }
 }

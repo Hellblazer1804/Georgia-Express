@@ -11,10 +11,14 @@ public class CartItemDTO {
     @JsonProperty("quantity")
     private Integer quantity;
 
+    @JsonProperty("cart_item_cost")
+    private Integer cartItemCost;
+
     public CartItemDTO(CartItem cartItem) {
         this.itemId = (long) cartItem.getItem().getItemId();
         this.itemName = cartItem.getItem().getItemName();
         this.quantity = cartItem.getQuantity();
+        this.cartItemCost = cartItem.getCost();
     }
 
     // Getters

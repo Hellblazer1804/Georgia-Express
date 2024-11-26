@@ -14,9 +14,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
@@ -31,6 +34,8 @@ public class CardService {
 
     @Autowired
     private CardRepository cardRepository;
+    @Autowired
+    private CustomerService customerService;
 
     public CardDTO processCreditCardApplication(Long customerId) {
         Customer customer = customerRepository.findById(Math.toIntExact(customerId))
@@ -53,16 +58,17 @@ public class CardService {
         String cardNumber = generateCardNumber();
         String expiryDate = generateExpiryDate();
         int cvv = generateCVV();
-
+        double recommendedCreditLimit = verificationResult.getRecommendedCreditLimit()
+                * Math.pow(0.9, findByCustomerId(Math.toIntExact(customerId)).size());
         Card newCard = new Card(
                 cardNumber,
                 expiryDate,
                 cvv,
-                verificationResult.getRecommendedCreditLimit(),
+                recommendedCreditLimit,
                 "Active",
                 true,
                 "Approved",
-                verificationResult.getRecommendedCreditLimit(),
+                recommendedCreditLimit,
                 customer,
                 BigDecimal.ZERO,// Initial minimum payment
                 BigDecimal.valueOf(100), // Initial balance
@@ -122,14 +128,28 @@ public class CardService {
 
     public CardDTO findByCardNumber(String cardId) {
         Card card = cardRepository.findByCardNumber(cardId);
+        if (card == null) {
+            throw new NotFoundException("Card not found");
+        }
         return mapToCardDTO(card);
     }
 
-    public Card findByCustomerId(Integer customerId) {
+    public List<CardDTO> findDTOByCustomerId(Integer customerId) {
         Customer customer = customerRepository.findById(Math.toIntExact(customerId))
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
-        Card card = cardRepository.findByCustomer(customer);
-        return card;
+        List<Card> card = cardRepository.findByCustomer(customer);
+        List<CardDTO> cardDTOList = new ArrayList<>();
+        for (Card c : card) {
+            cardDTOList.add(mapToCardDTO(c));
+        }
+        return cardDTOList;
+    }
+
+    public List<Card> findByCustomerId(Integer customerId) {
+        Customer customer = customerRepository.findById(Math.toIntExact(customerId))
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
+        List<Card> cards = cardRepository.findByCustomer(customer);
+        return cards;
     }
 
     public void deleteCard(String cardNumber) {
@@ -159,6 +179,11 @@ public class CardService {
             // Add reward points (assuming 1 point per every 10 dollars spent)
             int rewardPoints = paymentAmount.divide(BigDecimal.valueOf(10), RoundingMode.DOWN).intValue();
             card.setRewardPoints(card.getRewardPoints() + rewardPoints);
+            if (card.getCardBalance().
+                    divide(BigDecimal.valueOf(card.getCreditLimit()), MathContext.DECIMAL128).compareTo(BigDecimal.valueOf(0.30)) <= 0) {
+                customerService.updateCreditScore(card.getCustomer().getCustomerId(),
+                        card.getCustomer().getCreditScore() + 5);
+            }
 
             cardRepository.save(card);
 
