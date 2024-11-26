@@ -31,7 +31,7 @@ export default function RegistrationForm() {
         name: `${formData.firstName} ${formData.lastName}`,
         ssn: formData.ssn,
         email: formData.email,
-        phoneNumber: formData.phoneNumber,
+        phone: formData.phoneNumber,
         address: formData.address,
         creditScore: parseInt(formData.creditScore, 10),
         salary: parseInt(formData.salary, 10),

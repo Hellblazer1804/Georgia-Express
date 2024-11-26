@@ -10,7 +10,7 @@ interface Customer {
     name: string;
     ssn: string;
     email: string;
-    phoneNumber: string;
+    phone: string;
     address: string;
     creditScore: number;
     salary: number;
@@ -131,7 +131,7 @@ export default function AccountOverview() {
             <div className={style.cardInfo}>
                 <p><strong>Name:</strong> {customer.name}</p>
                 <p><strong>Email:</strong> {customer.email}</p>
-                <p><strong>Phone Number:</strong> {customer.phoneNumber}</p>
+                <p><strong>Phone Number:</strong> {customer.phone}</p>
                 <p><strong>Address:</strong> {customer.address}</p>
                 <p><strong>Credit Score:</strong> {customer.creditScore}</p>
                 <p><strong>Salary:</strong> ${customer.salary.toLocaleString()}</p>
