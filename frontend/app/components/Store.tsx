@@ -85,7 +85,6 @@ export default function Store() {
                 {items.map((item) => (
                     <ItemCard
                         key={item.itemId}
-                        image=""
                         title={item.itemName}
                         price={item.cost}
                         onBuy={() => handleAddToCart(item.itemId)}
