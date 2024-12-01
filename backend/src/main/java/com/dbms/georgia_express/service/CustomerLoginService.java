@@ -63,11 +63,9 @@ public class CustomerLoginService {
     }
 
     public CustomerLogin getCustomerLoginFromToken(String token) {
-        System.out.println("Original Token: " + token); // Log the original token
         if (token.startsWith("Bearer ")) {
             token = token.substring(7); // Remove the "Bearer " prefix
         }
-        System.out.println("Trimmed Token: " + token); // Log the trimmed token
 
         if (!jwtTokenUtil.validateToken(token)) {
             throw new UnauthorizedException("Invalid token");

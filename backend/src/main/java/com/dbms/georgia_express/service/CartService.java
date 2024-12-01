@@ -68,7 +68,6 @@ public class CartService {
 
     public void removeFromCart(String token, Long itemId) {
         CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
-        System.out.println("Customer Login: " + customerLogin.getUsername()); // Log the customer login
         Inventory item = inventoryService.findItemById(Math.toIntExact(itemId))
                 .orElseThrow(() -> new NotFoundException("Item not found"));
 

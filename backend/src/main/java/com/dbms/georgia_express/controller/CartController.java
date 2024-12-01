@@ -24,9 +24,8 @@ public class CartController {
         return ResponseEntity.ok("Item added to cart");
     }
 
-    @DeleteMapping("/remove")
-    public ResponseEntity<?> removeFromCart(@RequestHeader("Authorization") String token, @RequestParam Long itemId) {
-        System.out.println("Authorization Token: " + token); // Log the token
+    @DeleteMapping("/remove/{itemId}")
+    public ResponseEntity<?> removeFromCart(@RequestHeader("Authorization") String token, @PathVariable Long itemId) {
         cartService.removeFromCart(token, itemId);
         return ResponseEntity.ok("Item removed from cart");
     }
