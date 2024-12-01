@@ -123,10 +123,11 @@ public class CardController {
 
     @GetMapping("/customer")
     @Operation(summary = "Get the cards' information of a customer")
-    public ResponseEntity<List<CardDTO>> getCardByCustomerId(@RequestHeader("Authorization") String token, @PathVariable Integer customerId) {
+    public ResponseEntity<List<CardDTO>> getCardByCustomerId(@RequestHeader("Authorization") String token) {
         if(customerLoginService.getCustomerLoginFromToken(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        Integer customerId = customerLoginService.getCustomerLoginFromToken(token).getCustomer().getCustomerId();
         List<CardDTO> card = cardService.findDTOByCustomerId(customerId);
         if (card == null) {
             return ResponseEntity.notFound().build();
