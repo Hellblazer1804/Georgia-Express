@@ -47,6 +47,7 @@ public class JwtTokenUtil {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return !isTokenExpired(token);
         } catch (Exception e) {
+            System.out.println("Token validation error: " + e.getMessage()); // Add logging
             return false;
         }
     }

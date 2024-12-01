@@ -28,6 +28,7 @@ public class GeorgiaExpressApplication {
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/**", "/api/customer", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+						.requestMatchers("/api/cart/**").authenticated()
 						.anyRequest().authenticated()
 				)
 				.sessionManagement(session -> session
