@@ -19,7 +19,7 @@ public class CartController {
     private CartService cartService;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addToCart(@RequestHeader("Authorization") String token, @RequestBody AddtoCartRequest addtoCartRequest) {
+    public ResponseEntity<String> addToCart(@RequestHeader("Authorization") String token, @RequestBody AddtoCartRequest addtoCartRequest) {
         cartService.addToCart(token, addtoCartRequest.getItemId(), addtoCartRequest.getQuantity());
         return ResponseEntity.ok("Item added to cart");
     }
@@ -38,7 +38,7 @@ public class CartController {
     }
 
     @DeleteMapping("/clear")
-    public ResponseEntity<?> clearCart(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> clearCart(@RequestHeader("Authorization") String token) {
         cartService.clearCart(token);
         return ResponseEntity.ok("Cart cleared");
     }

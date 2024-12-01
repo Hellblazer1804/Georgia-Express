@@ -39,12 +39,13 @@ public class TransactionService {
     private CustomerRepository customerRepository;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private CustomerLoginService customerLoginService;
 
-    public Transaction processTransaction(String username, String cardNumber, int cvv) {
-        CustomerLogin customerLogin = customerLoginRepository.findById(username)
-                .orElseThrow(() -> new NotFoundException("Customer not found"));
+    public Transaction processTransaction(String token, String cardNumber, int cvv) {
+        CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
 
-        List<CartItem> cartItems = cartService.getCart(username);
+        List<CartItem> cartItems = cartService.getCart(token);
         BigDecimal totalAmount = getTotalAmount(cartItems);
         CardDTO card = cardService.findByCardNumber(cardNumber);
         if (customerLogin.getCustomer().getCustomerId() != card.getCustomer().getCustomerId()) {
@@ -65,7 +66,7 @@ public class TransactionService {
         transaction.setAmount(totalAmount);
         transaction.setTransactionDate(String.valueOf(LocalDateTime.now()));
         Transaction savedTransaction = transactionRepository.save(transaction);
-        cartService.clearCart(username);
+        cartService.clearCart(token);
         return transaction;
     }
 
@@ -78,9 +79,8 @@ public class TransactionService {
         return totalAmount;
     }
 
-    public List<Transaction> getTransactionHistory(String username) {
-        CustomerLogin customerLogin = customerLoginRepository.findById(username)
-                .orElseThrow(() -> new NotFoundException("Customer not found"));
+    public List<Transaction> getTransactionHistory(String token) {
+        CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
         return transactionRepository.findByCustomerLogin(customerLogin);
     }
 }

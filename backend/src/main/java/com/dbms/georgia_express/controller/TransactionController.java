@@ -23,9 +23,9 @@ public class TransactionController {
 
     @PostMapping("/process")
     @Operation(summary = "Process a transaction based on the username")
-    public ResponseEntity<TransactionResponse> processTransaction(@RequestHeader String username, @RequestBody TransactionRequest request) {
+    public ResponseEntity<TransactionResponse> processTransaction(@RequestHeader("Authorization") String token, @RequestBody TransactionRequest request) {
         try {
-            Transaction transaction = transactionService.processTransaction(username, request.getCardNumber(),
+            Transaction transaction = transactionService.processTransaction(token, request.getCardNumber(),
                     request.getCvv());
             TransactionDTO transactionDTO = convertToDTO(transaction);
             TransactionResponse response = new TransactionResponse("Transaction processed successfully", transactionDTO);
@@ -44,8 +44,8 @@ public class TransactionController {
 
     @GetMapping("/history")
     @Operation(summary = "Gets the transaction history for a customer")
-    public ResponseEntity<List<TransactionDTO>> getTransactionHistory(@RequestHeader String username) {
-        List<Transaction> transactions = transactionService.getTransactionHistory(username);
+    public ResponseEntity<List<TransactionDTO>> getTransactionHistory(@RequestHeader("Authorization") String token) {
+        List<Transaction> transactions = transactionService.getTransactionHistory(token);
         List<TransactionDTO> transactionDTOs = transactions.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
