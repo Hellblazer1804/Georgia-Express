@@ -1,4 +1,5 @@
-# Georgia-Express
+# Georgia Express
+
 DBMS Class term project
 
 ## Team Members:
@@ -26,8 +27,12 @@ Make sure the following is installed.
 2. Make sure docker is running
 3. Open terminal and navigate to the docker folder
 4. Spin up the database using `docker-compose up -d`
+5. To test if the postgres is running on command line run `docker ps` and you should see a container with the name `postgres`
+6. Another sanity check : `docker exec -it postgres /bin/sh` and then `psql -U postgres` and you should be in the postgres shell.
+7. List the databases using `\l` and you should see a database named `postgres` and you can view all the tables using `\dt`
 
 #### Running the backend using IntelliJ:
+Pre-req: Make sure the postgres docker container is running.
 1. Open IntelliJ, go to File -> New -> Project from Existing Sources -> Select the unzipped folder.
 2. Select Import Project from External Model -> Maven -> Next -> Next -> Finish.
 3. Wait for the project to load.
@@ -35,6 +40,7 @@ Make sure the following is installed.
 5. Run the file GeorgiaExpressApplication.java and that should spin up the backend on Port 8080.
 
 #### Running the backend using terminal (in case intelliJ doesn't work):
+Pre-req: Make sure the postgres docker container is running.
 1. Open terminal and navigate to the backend folder.
 2. Run `mvn clean install` and if that fails then `mvn clean install -DskipTests`
 3. Run `mvn spring-boot:run`
