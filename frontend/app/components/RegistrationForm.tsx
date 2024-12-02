@@ -18,6 +18,7 @@ export default function RegistrationForm() {
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
         const { name, value } = e.target;
         setFormData(prevData => ({
             ...prevData,
