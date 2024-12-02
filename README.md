@@ -20,9 +20,7 @@ Make sure the following is installed.
 5. Postman (https://www.postman.com/downloads/)
 6. Node.js and npm (https://nodejs.org/en)
 
-### Backend:
-
-#### First steps:
+### First steps and spinning up the database:
 1. Unzip the file or clone the repository.
 2. Make sure docker is running
 3. Open terminal and navigate to the docker folder
@@ -30,6 +28,8 @@ Make sure the following is installed.
 5. To test if the postgres is running on command line run `docker ps` and you should see a container with the name `postgres`
 6. Another sanity check : `docker exec -it postgres /bin/sh` and then `psql -U postgres` and you should be in the postgres shell.
 7. List the databases using `\l` and you should see a database named `postgres` and you can view all the tables using `\dt`
+
+### Backend:
 
 #### Running the backend using IntelliJ:
 Pre-req: Make sure the postgres docker container is running.
@@ -62,3 +62,7 @@ Pre-req: Make sure the postgres docker container is running.
     - Password: `test1234`
 4. To get the tables, go to Servers -> Databases -> postgres -> Schemas -> public -> Tables
 
+### Postman:
+1. Open Postman
+2. Import the collection from the file `postman-collection/GeorgiaExpress.postman_collection.json`
+3. All the API endpoints should be imported and you can test them.
