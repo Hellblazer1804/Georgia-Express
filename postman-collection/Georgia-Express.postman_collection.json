@@ -1,0 +1,432 @@
+{
+	"info": {
+		"_postman_id": "33cf2701-f68c-40b6-82da-7f7faeda0027",
+		"name": "Georgia-Express",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "15231815",
+		"_collection_link": "https://dbms-project-team.postman.co/workspace/DBMS-Project-Team-Workspace~5be3ff2b-7b0b-4c9c-ab4b-b216785d69fa/collection/15231815-33cf2701-f68c-40b6-82da-7f7faeda0027?action=share&source=collection_link&creator=15231815"
+	},
+	"item": [
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "Get All Customers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/api/customer"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Customer By Id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Smith\",\n    \"ssn\": \"123456789\",\n    \"email\":\"johnsmith@example.com\",\n    \"phone\": \"1234567890\",\n    \"creditScore\": 750,\n    \"dateOfBirth\": \"1999-12-15\",\n    \"address\": \"Athens\",\n    \"salary\": 55000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/api/customer"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"method": "PUT",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Customer",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"janedoe\",\n    \"password\": \"12345678\",\n    \"customer_id\":\"1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/api/auth/register"
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Postman test script to save the token",
+									"const response = pm.response.json();",
+									"pm.environment.set(\"jwt_token\", response.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"johnsmith\",\n    \"password\": \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/api/auth/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Card",
+			"item": [
+				{
+					"name": "Verify Card",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/api/card"
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Card",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{host}}/api/card/2/generate"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Card By Customer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/api/card/7358419465556785"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Balance",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/card/7705836293094199/balance?balance=5.00",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"card",
+								"7705836293094199",
+								"balance"
+							],
+							"query": [
+								{
+									"key": "balance",
+									"value": "5.00"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update MinPay",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/card/8983946232741309?amount=150",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"card",
+								"8983946232741309"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "150"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update RewardPoints",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/card/5888998049034597/reward_points?points=10",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"card",
+								"5888998049034597",
+								"reward_points"
+							],
+							"query": [
+								{
+									"key": "points",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Card",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{host}}/api/card/3135811761410505\n    \"timestamp\": \"2024-11-20T05:40:24.110+00:00\",\n    \"status\": 405,\n    \"error\": \"Method Not Allowed\",\n    \"path\": \"/api/card/3135811761410505\"\n\n    \"timestamp\": \"2024-11-20T05:40:24.110+00:00\",\n    \"status\": 405,\n    \"error\": \"Method Not Allowed\",\n    \"path\": \"/api/card/3135811761410505\"\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Make Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/card/8464185220616693/payment?paymentAmount=200",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"card",
+								"8464185220616693",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "paymentAmount",
+									"value": "200"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Card By Card Number",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Inventory",
+			"item": [
+				{
+					"name": "Get All Items",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get Item By Id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Create Item",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"item_name\":\"iPhone\",\n    \"cost\": 1000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/api/inventory"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "Get Cart Items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "username",
+								"value": "johnsmith",
+								"type": "text"
+							}
+						],
+						"url": "{{host}}/api/cart"
+					},
+					"response": []
+				},
+				{
+					"name": "Add to Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "username",
+								"value": "johnsmith",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"item_id\":3,\n    \"quantity\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/api/cart/add"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove From Cart",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{host}}/api/cart/remove/2"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaction",
+			"item": [
+				{
+					"name": "Process Transaction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"johnsmith\",\n    \"card_number\": \"1422732160042417\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/api/transaction/process"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction History",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hello",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Swagger",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
