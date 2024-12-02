@@ -11,6 +11,8 @@ import com.dbms.georgia_express.repositories.CustomerLoginRepository;
 import com.dbms.georgia_express.repositories.CustomerRepository;
 import com.dbms.georgia_express.repositories.TransactionRepository;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,8 @@ public class TransactionService {
     @Autowired
     private CustomerLoginService customerLoginService;
 
+    private final static Logger logger = LoggerFactory.getLogger(TransactionService.class);
+
     public Transaction processTransaction(String token, String cardNumber, int cvv) {
         CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
 
@@ -49,15 +53,18 @@ public class TransactionService {
         BigDecimal totalAmount = getTotalAmount(cartItems);
         CardDTO card = cardService.findByCardNumber(cardNumber);
         if (customerLogin.getCustomer().getCustomerId() != card.getCustomer().getCustomerId()) {
+            logger.error("Customer id mismatch");
             throw new BadRequestException("Customer id mismatch");
         }
         if(card.getCvv() != cvv) {
+            logger.error("CVV mismatch");
             throw new BadRequestException("CVV mismatch");
         }
         cardService.updateCardBalance(Long.valueOf(card.getCardNumber()),
                 card.getCardBalance().add(totalAmount));
         if (card.getCardBalance().divide(BigDecimal.valueOf(card.getCreditLimit()), MathContext.DECIMAL128)
                 .compareTo(BigDecimal.valueOf(0.30)) > 0) {
+            logger.error("Balance exceeded a certain rate . Credit score dropped");
             customerService.updateCreditScore(customerLogin.getCustomer().getCustomerId(),
                     customerLogin.getCustomer().getCreditScore() - 20);
         }
@@ -66,6 +73,7 @@ public class TransactionService {
         transaction.setAmount(totalAmount);
         transaction.setTransactionDate(String.valueOf(LocalDateTime.now()));
         Transaction savedTransaction = transactionRepository.save(transaction);
+        logger.info("Transaction processed successfully");
         cartService.clearCart(token);
         return transaction;
     }
@@ -81,6 +89,12 @@ public class TransactionService {
 
     public List<Transaction> getTransactionHistory(String token) {
         CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
-        return transactionRepository.findByCustomerLogin(customerLogin);
+        try {
+            logger.info("Fetching transaction history for customer: " + customerLogin.getCustomer().getName());
+            return transactionRepository.findByCustomerLogin(customerLogin);
+        } catch (Exception e) {
+            logger.error("Error fetching transaction history", e);
+            throw e;
+        }
     }
 }

@@ -6,6 +6,8 @@ import com.dbms.georgia_express.dto.LoginResponse;
 import com.dbms.georgia_express.dto.RegistrationRequest;
 import com.dbms.georgia_express.service.CustomerLoginService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +20,14 @@ public class CustomerLoginController {
     @Autowired
     private CustomerLoginService customerLoginService;
 
+    private static final Logger logger = LoggerFactory.getLogger(CustomerLoginController.class);
+
     @PostMapping("/login")
     @Operation(summary = "Logs in an user")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest customerLogin) {
         String token = customerLoginService.login(customerLogin);
         if (token != null) {
+            logger.info("Token generated successfully");
             return ResponseEntity.ok().body(new LoginResponse(token));
         }
         return ResponseEntity.status(401).body(new LoginResponse("Invalid credentials"));

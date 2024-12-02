@@ -6,6 +6,8 @@ import com.dbms.georgia_express.model.Customer;
 import com.dbms.georgia_express.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,16 +18,38 @@ public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(CustomerService.class);
+
     public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
+        try {
+            logger.info("Fetching all customers");
+            return customerRepository.findAll();
+        } catch (Exception e) {
+            logger.error("Error fetching all customers", e);
+            throw e;
+        }
+
     }
 
     public Optional<Customer> getCustomerById(int id) {
-        return customerRepository.findById(id);
+        try {
+            logger.info("Fetching customer with id: " + id);
+            return customerRepository.findById(id);
+        } catch (Exception e) {
+            logger.error("Error fetching customer with id: " + id, e);
+            throw new RuntimeException(e);
+        }
+
     }
 
     public Customer createCustomer(Customer customer) {
-        return customerRepository.save(customer);
+        try {
+            logger.info("Creating customer");
+            return customerRepository.save(customer);
+        } catch (Exception e) {
+            logger.error("Error creating customer", e);
+            throw e;
+        }
     }
 
     public Customer updateCustomer(int id, Customer customerDetails) {
@@ -51,6 +75,7 @@ public class CustomerService {
 
         customer.setCreditScore(creditScore);
         customerRepository.save(customer);
+        logger.info("Credit score updated to "+creditScore);
     }
 
     public void deleteCustomer(int id) {
@@ -58,6 +83,7 @@ public class CustomerService {
                 .orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));
 
         customerRepository.delete(customer);
+        logger.info("Customer successfully deleted");
     }
 
 }

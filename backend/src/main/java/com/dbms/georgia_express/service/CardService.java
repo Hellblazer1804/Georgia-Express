@@ -9,6 +9,8 @@ import com.dbms.georgia_express.dto.CardDTO;
 import com.dbms.georgia_express.model.CustomerLogin;
 import com.dbms.georgia_express.repositories.CustomerRepository;
 import com.dbms.georgia_express.repositories.CardRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -40,6 +42,8 @@ public class CardService {
     @Autowired
     private CustomerLoginService customerLoginService;
 
+    private static final Logger logger = LoggerFactory.getLogger(CardService.class);
+
     public CardDTO processCreditCardApplication(String token) {
         CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
         Customer customer = customerRepository.findById(Math.toIntExact(customerLogin.getCustomer().getCustomerId()))
@@ -56,6 +60,7 @@ public class CardService {
         Card verificationResult = verificationService.verifyCustomerForCreditCard(customer);
 
         if (!verificationResult.isApproved()) {
+            logger.error("Customer is not eligible for a credit card.");
             throw new RuntimeException("Customer is not eligible for a credit card.");
         }
 
@@ -80,6 +85,8 @@ public class CardService {
         );
 
         Card savedCard = cardRepository.save(newCard);
+        logger.info("Card successfully generated with card number {} , expiry {}, cvv {} and  credit limit ${}", cardNumber,expiryDate
+                ,cvv, recommendedCreditLimit);
         return mapToCardDTO(savedCard);
     }
 
@@ -107,10 +114,12 @@ public class CardService {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException("Card not found"));
         if (newBalance.compareTo(BigDecimal.valueOf(card.getCreditLimit())) > 0) {
+            logger.error("Credit limit exceeded. Transaction failed");
             throw new BadRequestException("Credit limit exceeded. Transaction failed");
         }
         card.setCardBalance(newBalance);
         Card updatedCard = cardRepository.save(card);
+        logger.info("Card balance updated to {}", newBalance);
         return mapToCardDTO(updatedCard);
     }
 
@@ -119,6 +128,7 @@ public class CardService {
                 .orElseThrow(() -> new NotFoundException("Card not found"));
         card.setMinimumPayment(minimumPayment);
         Card updatedCard = cardRepository.save(card);
+        logger.info("Minimum payment updated to {}", minimumPayment);
         return mapToCardDTO(updatedCard);
     }
 
@@ -127,6 +137,7 @@ public class CardService {
                 .orElseThrow(() -> new NotFoundException("Card not found"));
         card.setRewardPoints(card.getRewardPoints() + points);
         Card updatedCard = cardRepository.save(card);
+        logger.info("Reward points updated to {}", card.getRewardPoints());
         return mapToCardDTO(updatedCard);
     }
 
@@ -152,12 +163,15 @@ public class CardService {
     public List<Card> findByCustomerId(Integer customerId) {
         Customer customer = customerRepository.findById(Math.toIntExact(customerId))
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
-        List<Card> cards = cardRepository.findByCustomer(customer);
-        return cards;
+        return cardRepository.findByCustomer(customer);
     }
 
     public void deleteCard(String cardNumber) {
         Card card = cardRepository.findByCardNumber(cardNumber);
+        if (card == null) {
+            logger.error("Card not found");
+            throw new NotFoundException("Card not found");
+        }
         cardRepository.delete(card);
     }
 
@@ -194,11 +208,13 @@ public class CardService {
             paymentDTO.setPaymentAmount(paymentAmount);
             paymentDTO.setPaymentStatus("Processed");
             paymentDTO.setVerificationReason("Payment processed successfully");
+            logger.info("Payment processed successfully");
             return paymentDTO;
         } else {
             // If no payment amount is provided, simply return the current state of the payment
             paymentDTO.setVerificationReason("No payment amount provided");
             paymentDTO.setPaymentStatus("Failed");
+            logger.error("No payment amount provided");
             return paymentDTO;
         }
     }
