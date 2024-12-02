@@ -28,15 +28,15 @@ public class CustomerLoginController {
         String token = customerLoginService.login(customerLogin);
         if (token != null) {
             logger.info("Token generated successfully");
-            return ResponseEntity.ok().body(new LoginResponse(token));
+            return ResponseEntity.ok().body(new LoginResponse(token, customerLoginService.getCustomerLoginFromToken(token).getCustomer()));
         }
-        return ResponseEntity.status(401).body(new LoginResponse("Invalid credentials"));
+        return ResponseEntity.status(401).body(new LoginResponse("Invalid credentials", null));
     }
 
     @PostMapping("/register")
     @Operation(summary = "Registers an user")
     public ResponseEntity<LoginResponse> register(@RequestBody RegistrationRequest customerRegistration) {
         String token = customerLoginService.register(customerRegistration);
-        return ResponseEntity.ok().body(new LoginResponse(token));
+        return ResponseEntity.ok().body(new LoginResponse(token, customerLoginService.getCustomerLoginFromToken(token).getCustomer()));
     }
 }
