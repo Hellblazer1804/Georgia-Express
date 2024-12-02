@@ -7,12 +7,16 @@ import com.dbms.georgia_express.model.Customer;
 import com.dbms.georgia_express.model.CustomerLogin;
 import com.dbms.georgia_express.repositories.CustomerLoginRepository;
 import com.dbms.georgia_express.security.JwtTokenUtil;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class CustomerLoginService {
+    private static final Logger logger = LoggerFactory.getLogger(CustomerLoginService.class);
 
     @Autowired
     private CustomerLoginRepository customerLoginRepository;
@@ -28,10 +32,12 @@ public class CustomerLoginService {
 
     public String register(RegistrationRequest request) {
         if (customerLoginRepository.existsByUsername(request.getUsername())) {
+            logger.error("Username already exists");
             throw new RuntimeException("Username already exists");
         }
 
         if (!isValidPassword(request.getPassword())) {
+            logger.error("Password must be 8 characters long and contain any symbols");
             throw new RuntimeException("Password must be 8 characters long and contain any symbols");
         }
 
@@ -44,6 +50,7 @@ public class CustomerLoginService {
         customerLogin.setCustomer(customer);
 
         customerLoginRepository.save(customerLogin);
+        logger.info("Customer registered successfully");
         return jwtTokenUtil.generateToken(customerLogin.getUsername());
 
     }
@@ -51,8 +58,10 @@ public class CustomerLoginService {
     public String login(LoginRequest request) {
         CustomerLogin customerLogin = customerLoginRepository.findById(request.getUsername()).orElse(null);
         if (customerLogin != null && passwordEncoder.matches(request.getPassword(), customerLogin.getPassword())) {
+            logger.info("Customer logged in successfully");
             return jwtTokenUtil.generateToken(request.getUsername());
         }
+        logger.error("Invalid username or password");
         return null;
     }
 
@@ -68,6 +77,7 @@ public class CustomerLoginService {
         }
 
         if (!jwtTokenUtil.validateToken(token)) {
+            logger.error("Invalid token");
             throw new UnauthorizedException("Invalid token");
         }
         String username = jwtTokenUtil.getUsernameFromToken(token);

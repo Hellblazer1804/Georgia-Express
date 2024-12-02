@@ -11,6 +11,8 @@ import com.dbms.georgia_express.repositories.CartRepository;
 import com.dbms.georgia_express.repositories.CustomerLoginRepository;
 import com.dbms.georgia_express.security.JwtTokenUtil;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,8 @@ public class CartService {
 
     @Autowired
     private CustomerLoginService customerLoginService;
+
+    private final Logger logger = LoggerFactory.getLogger(CartService.class);
 
 
     public void addToCart(String token, Long itemId, Integer quantity) {
@@ -59,7 +63,10 @@ public class CartService {
                 });
 
         cartItem.setQuantity(cartItem.getQuantity() + quantity);
-        cartItem.setCost(calculateCartItemCost(cartItem));
+        int cost = calculateCartItemCost(cartItem);
+        cartItem.setCost(cost);
+        logger.info("{} x {} added to cart . Cost incurred ${}",
+                cartItem.getQuantity(), item.getItemName(),cost);
         cartItemRepository.save(cartItem);
 
         // Update cart amount
@@ -78,6 +85,7 @@ public class CartService {
                 .orElseThrow(() -> new NotFoundException("Item not found in cart"));
 
         cart.removeCartItem(cartItem);
+        logger.info("{} removed from cart", item.getItemName());
         cartRepository.save(cart);
 
         // Update cart amount
@@ -89,7 +97,7 @@ public class CartService {
 
         Cart cart = cartRepository.findByCustomerLogin(customerLogin)
                 .orElseThrow(() -> new NotFoundException("Cart not found"));
-
+        logger.info("Cart fetched successfully");
         return cart.getCartItems();
     }
 
@@ -107,6 +115,7 @@ public class CartService {
 
         // Save the empty cart
         cartRepository.save(cart);
+        logger.info("Cart cleared successfully");
     }
 
     public BigDecimal getTotalAmount(List<CartItem> cartItems) {
@@ -121,6 +130,7 @@ public class CartService {
     private void updateCartAmount(Cart cart) {
         BigDecimal cartAmount = getTotalAmount(cart.getCartItems());
         cart.setCartAmount(cartAmount);
+        logger.info("Cart amount updated to ${}", cartAmount);
         cartRepository.save(cart);
     }
 
