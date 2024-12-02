@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React, {useEffect, useState} from "react";
 import style from "./AccountOverview.module.css";
-import { useRouter } from "next/navigation";
+import {useRouter} from "next/navigation";
+import {useSearchParams} from "next/navigation";
 
 interface Customer {
     customerId: number;
@@ -19,6 +19,7 @@ interface Customer {
 
 interface Card {
     card_number: string;
+    cvv: number;
     expiration_date: string;
     recommended_credit_limit: number;
     card_status: string;
@@ -29,17 +30,21 @@ interface Card {
 }
 
 export default function AccountOverview() {
-    const searchParams = useSearchParams();
-    const customerId = searchParams.get("id");
-    const customerUsername = searchParams.get("user");
     const [customer, setCustomer] = useState<Customer | null>(null);
     const [cards, setCards] = useState<Card[]>([]);
+    const [showDetails, setShowDetails] = useState<{ [key: number]: boolean }>({});
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const customerId = searchParams.get("id");
+    const token = localStorage.getItem("token");
 
     const handleApplyForCard = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/card/${customerId}/generate`, {
+            const response = await fetch(`http://localhost:8080/api/card/generate`, {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             });
             if (!response.ok) {
                 throw new Error("Failed to generate card");
@@ -47,65 +52,106 @@ export default function AccountOverview() {
             const data = await response.json();
             console.log("Card generated:", data);
             alert("Card generated successfully!");
-            router.refresh();
+
+            // Fetch the updated list of cards
+            const updatedCardsResponse = await fetch(`http://localhost:8080/api/card/customer`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!updatedCardsResponse.ok) {
+                throw new Error("Failed to fetch updated cards");
+            }
+            const updatedCards = await updatedCardsResponse.json();
+            setCards(updatedCards); // Update the state with the new cards
         } catch (error) {
             console.error("Error generating card:", error);
             alert("Failed to generate card. Please try again.");
         }
-    }
+    };
+
 
     const makePayment = (cardNumber: string) => async (event: React.FormEvent) => {
-    event.preventDefault();
-    const form = event.target as HTMLFormElement;
-    const formData = new FormData(form);
-    const amount = formData.get("amount") as string;
+        event.preventDefault();
+        const form = event.target as HTMLFormElement;
+        const formData = new FormData(form);
+        const amount = formData.get("amount") as string;
 
-    try {
-        const response = await fetch(`http://localhost:8080/api/card/${cardNumber}/payment?paymentAmount=${amount}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ amount: parseFloat(amount) }),
-        });
-        if (!response.ok) {
-            throw new Error("Failed to make payment");
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/card/${cardNumber}/payment?paymentAmount=${amount}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({amount: parseFloat(amount)}),
+                }
+            );
+            if (!response.ok) {
+                throw new Error("Failed to make payment");
+            }
+            const data = await response.json();
+            console.log("Payment made:", data);
+            alert("Payment made successfully!");
+
+            // Re-fetch the updated card data
+            const updatedCardsResponse = await fetch(`http://localhost:8080/api/card/customer`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!updatedCardsResponse.ok) {
+                throw new Error("Failed to fetch updated card info");
+            }
+            const updatedCards = await updatedCardsResponse.json();
+            setCards(updatedCards); // Update the state with the latest card info
+        } catch (error) {
+            console.error("Error making payment:", error);
+            alert("Failed to make payment. Please try again.");
         }
-        const data = await response.json();
-        console.log("Payment made:", data);
-        alert("Payment made successfully!");
+    };
 
-        // Re-fetch the updated card data
-        const updatedCardsResponse = await fetch(`http://localhost:8080/api/card/customer/${customerId}`);
-        if (!updatedCardsResponse.ok) {
-            throw new Error("Failed to fetch updated card info");
-        }
-        const updatedCards = await updatedCardsResponse.json();
-        setCards(updatedCards); // Update the state with the latest card info
-    } catch (error) {
-        console.error("Error making payment:", error);
-        alert("Failed to make payment. Please try again.");
-    }
-};
-
+    const toggleShowDetails = (index: number) => {
+        setShowDetails((prevState) => ({
+            ...prevState,
+            [index]: !prevState[index],
+        }));
+    };
 
     useEffect(() => {
-        if (!customerId) return;
+        if (!customerId || !token) return;
 
         const fetchCustomerAndCards = async () => {
             try {
-                const customerResponse = await fetch(`http://localhost:8080/api/customer/${customerId}`);
+                const id = parseInt(customerId);
+                console.log("id", id);
+                const customerResponse = await fetch(`http://localhost:8080/api/customer/${id}`, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
                 if (!customerResponse.ok) {
                     throw new Error(`Failed to fetch customer: ${customerResponse.status}`);
                 }
                 const customerData = await customerResponse.json();
                 setCustomer(customerData);
 
-                const cardsResponse = await fetch(`http://localhost:8080/api/card/customer/${customerId}`);
+                const cardsResponse = await fetch(`http://localhost:8080/api/card/customer`, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
                 if (!cardsResponse.ok) {
                     throw new Error(`Failed to fetch cards: ${cardsResponse.status}`);
                 }
                 const cardsData = await cardsResponse.json();
+                console.log("Cards data:", cardsData);
                 setCards(cardsData);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -134,7 +180,7 @@ export default function AccountOverview() {
                 <p><strong>Phone Number:</strong> {customer.phone}</p>
                 <p><strong>Address:</strong> {customer.address}</p>
                 <p><strong>Credit Score:</strong> {customer.creditScore}</p>
-                <p><strong>Salary:</strong> ${customer.salary.toLocaleString()}</p>
+                <p><strong>Salary:</strong> ${customer.salary}</p>
                 <p><strong>Date of Birth:</strong> {customer.dateOfBirth}</p>
             </div>
 
@@ -143,7 +189,16 @@ export default function AccountOverview() {
             {cards.length > 0 ? (
                 cards.map((card, index) => (
                     <div key={index} className={style.card}>
-                        <p><strong>Card Number:</strong> **** **** **** {card.card_number.slice(-4)}</p>
+                        <p>
+                            <strong>Card Number:</strong>{" "}
+                            {showDetails[index] ? card.card_number : `**** **** **** ${card.card_number.slice(-4)}`}
+                            <button onClick={() => toggleShowDetails(index)} className={style.show}>
+                                {showDetails[index] ? "Hide" : "Show"}
+                            </button>
+                        </p>
+                        <p>
+                            <strong>CVV:</strong> {showDetails[index] ? card.cvv : "***"}
+                        </p>
                         <p><strong>Expiry Date:</strong> {card.expiration_date}</p>
                         <p><strong>Credit Limit:</strong> ${card.recommended_credit_limit.toLocaleString()}</p>
                         <p><strong>Card Balance:</strong> ${card.card_balance.toLocaleString()}</p>
@@ -158,19 +213,13 @@ export default function AccountOverview() {
                         </form>
                         <hr className={style.line}/>
                     </div>
-
                 ))
-
             ) : (
                 <p>Loading card information...</p>
             )}
             <div className={style.buttons}>
-                <button onClick={() => router.push(`/store?id=${customerId}&user=${customerUsername}`)}>
-                    Store
-                </button>
-                <button onClick={handleApplyForCard}>
-                    Apply for a Card
-                </button>
+                <button onClick={() => router.push(`/store?id=${customerId}`)}>Store</button>
+                <button onClick={handleApplyForCard}>Apply for a Card</button>
             </div>
         </div>
     );

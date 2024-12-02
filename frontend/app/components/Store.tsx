@@ -17,12 +17,18 @@ export default function Store() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const customerId = searchParams.get("id");
-    const customerUsername = searchParams.get("user");
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await fetch("http://localhost:8080/api/inventory");
+                console.log("token in store", token);
+                const response = await fetch("http://localhost:8080/api/inventory", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    }
+                });
                 if (!response.ok) {
                     throw new Error("Failed to fetch inventory items");
                 }
@@ -59,7 +65,7 @@ export default function Store() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "username": customerUsername || "",
+                        "Authorization": `Bearer ${token}`,
                     },
                     body: JSON.stringify(Inventory),
                 }
@@ -78,8 +84,8 @@ export default function Store() {
     return (
         <div className={style.container}>
             <div className={style.navButtons}>
-                <button onClick={() => router.push(`/overview?id=${customerId}&user=${customerUsername}`)}>Home</button>
-                <button onClick={() => router.push(`/cart?id=${customerId}&user=${customerUsername}`)}>Go to Cart</button>
+                <button onClick={() => router.push(`/overview?id=${customerId}`)}>Home</button>
+                <button onClick={() => router.push(`/cart?id=${customerId}`)}>Go to Cart</button>
             </div>
             <div className={style.gallery}>
                 {items.map((item) => (
