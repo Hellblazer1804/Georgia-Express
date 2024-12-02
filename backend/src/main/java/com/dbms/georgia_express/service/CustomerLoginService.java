@@ -52,7 +52,6 @@ public class CustomerLoginService {
         customerLoginRepository.save(customerLogin);
         logger.info("Customer registered successfully");
         return jwtTokenUtil.generateToken(customerLogin.getUsername());
-
     }
 
     public String login(LoginRequest request) {
@@ -62,7 +61,7 @@ public class CustomerLoginService {
             return jwtTokenUtil.generateToken(request.getUsername());
         }
         logger.error("Invalid username or password");
-        return null;
+        return "";
     }
 
     private boolean isValidPassword(String password) {
