@@ -28,10 +28,11 @@ public class GeorgiaExpressApplication {
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/**",
-								"/api/customer",
+								"/api/customer/**",
 								"/api/card/**",
 								"/api/cart/**",
 								"/api/transaction/**",
+								"/api/inventory/**",
 								"/swagger-ui/**",
 								"/v3/api-docs/**").permitAll()
 						.anyRequest().authenticated()

@@ -15,9 +15,10 @@ export default function Cart() {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const searchParams = useSearchParams();
     const customerId = searchParams.get("id");
-    const customerUsername = searchParams.get("user");
     const [totalCost, setTotalCost] = useState<number>(0);
     const router = useRouter();
+    const token = localStorage.getItem("token");
+    console.log("token in cart", token);
 
     useEffect(() => {
         const fetchCartItems = async () => {
@@ -26,7 +27,7 @@ export default function Cart() {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "username": customerUsername || "",
+                        "Authorization": `Bearer ${token}`,
                     },
                 });
                 if (!response.ok) {
@@ -44,7 +45,7 @@ export default function Cart() {
         };
 
         fetchCartItems();
-    }, [customerUsername]);
+    }, []);
 
     const handleRemoveItem = async (itemId: number) => {
         try {
@@ -52,7 +53,7 @@ export default function Cart() {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
-                    "username": customerUsername || "",
+                    "Authorization": `Bearer ${token}`,
                 },
             });
 
@@ -96,14 +97,14 @@ export default function Cart() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "username": customerUsername || "",
+                    "Authorization": `Bearer ${token}`,
                 },
                 body: JSON.stringify(cardInfo),
             });
 
             if (response.ok) {
                 alert("Checkout successful!");
-                router.push(`/overview?id=${customerId}&user=${customerUsername}`);
+                router.push(`/overview?id=${customerId}`);
             } else {
                 const errorData = await response.json();
                 console.error("Error response:", errorData);
@@ -112,7 +113,7 @@ export default function Cart() {
         } catch (error) {
             console.error("Error checking out:", error);
             alert("An error occurred. Please try again.");
-            router.push(`/overview?id=${customerId}&user=${customerUsername}`);
+            router.push(`/overview?id=${customerId}`);
         }
     };
 
@@ -133,7 +134,7 @@ export default function Cart() {
                 <div className={style.totalCost}>
                     Total: ${totalCost.toFixed(2)}
                 </div>
-                <a href={`/store?id=${customerId}&user=${customerUsername}`}>Back to store</a>
+                <a href={`/store?id=${customerId}`}>Back to store</a>
             </div>
             <div className={style.checkout}>
                 <form onSubmit={handleCheckout}>

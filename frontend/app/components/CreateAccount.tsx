@@ -51,9 +51,15 @@ export default function CreateAccount() {
                 const errorData = await registerResponse.json();
                 throw new Error(errorData.message || "Failed to create account");
             }
-            // Step 2: Generate a card for the customer
-            const cardResponse = await fetch(`http://localhost:8080/api/card/${customerId}/generate`, {
+            const data = await registerResponse.json();
+            const token = data.token;
+
+
+            const cardResponse = await fetch(`http://localhost:8080/api/card/generate`, {
                 method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                }
             });
 
             if (!cardResponse.ok) {
@@ -61,7 +67,7 @@ export default function CreateAccount() {
             }
             const cardData = await cardResponse.json();
             console.log("Card data:", cardData);
-            router.push(`/overview?id=${customerId}&user=${registrationData.username}`);
+            router.push(`/login`);
         } catch (error) {
             console.error("Error during account creation:", error);
             alert(`An error occurred`);
