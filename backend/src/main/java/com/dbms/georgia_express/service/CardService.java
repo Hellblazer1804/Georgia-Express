@@ -6,6 +6,7 @@ import com.dbms.georgia_express.exception.NotFoundException;
 import com.dbms.georgia_express.model.Customer;
 import com.dbms.georgia_express.model.Card;
 import com.dbms.georgia_express.dto.CardDTO;
+import com.dbms.georgia_express.model.CustomerLogin;
 import com.dbms.georgia_express.repositories.CustomerRepository;
 import com.dbms.georgia_express.repositories.CardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,19 +37,22 @@ public class CardService {
     private CardRepository cardRepository;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private CustomerLoginService customerLoginService;
 
-    public CardDTO processCreditCardApplication(Long customerId) {
-        Customer customer = customerRepository.findById(Math.toIntExact(customerId))
+    public CardDTO processCreditCardApplication(String token) {
+        CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
+        Customer customer = customerRepository.findById(Math.toIntExact(customerLogin.getCustomer().getCustomerId()))
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
 
         Card verificationResult = verificationService.verifyCustomerForCreditCard(customer);
         return mapToDTOFromVerification(verificationResult);
     }
 
-    public CardDTO generateCreditCard(Long customerId) {
-        Customer customer = customerRepository.findById(Math.toIntExact(customerId))
+    public CardDTO generateCreditCard(String token) {
+        CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
+        Customer customer = customerRepository.findById(Math.toIntExact(customerLogin.getCustomer().getCustomerId()))
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
-
         Card verificationResult = verificationService.verifyCustomerForCreditCard(customer);
 
         if (!verificationResult.isApproved()) {
@@ -59,7 +63,7 @@ public class CardService {
         String expiryDate = generateExpiryDate();
         int cvv = generateCVV();
         double recommendedCreditLimit = verificationResult.getRecommendedCreditLimit()
-                * Math.pow(0.9, findByCustomerId(Math.toIntExact(customerId)).size());
+                * Math.pow(0.9, findByCustomerId(Math.toIntExact(customerLogin.getCustomer().getCustomerId())).size());
         Card newCard = new Card(
                 cardNumber,
                 expiryDate,

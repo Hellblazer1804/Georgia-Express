@@ -6,6 +6,7 @@ import com.dbms.georgia_express.exception.UnauthorizedException;
 import com.dbms.georgia_express.model.Customer;
 import com.dbms.georgia_express.model.CustomerLogin;
 import com.dbms.georgia_express.repositories.CustomerLoginRepository;
+import com.dbms.georgia_express.security.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,13 @@ public class CustomerLoginService {
     @Autowired
     private CustomerService customerService;
 
+
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public CustomerLogin register(RegistrationRequest request) {
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    public String register(RegistrationRequest request) {
         if (customerLoginRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username already exists");
         }
@@ -38,23 +43,35 @@ public class CustomerLoginService {
         customerLogin.setPassword(passwordEncoder.encode(request.getPassword()));
         customerLogin.setCustomer(customer);
 
-        return customerLoginRepository.save(customerLogin);
+        customerLoginRepository.save(customerLogin);
+        return jwtTokenUtil.generateToken(customerLogin.getUsername());
+
     }
 
-    public CustomerLogin login(LoginRequest request) {
-        CustomerLogin customerLogin = customerLoginRepository.findById(request.getUsername())
-                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
-
-        if (!passwordEncoder.matches(request.getPassword(), customerLogin.getPassword())) {
-            throw new UnauthorizedException("Invalid username or password");
+    public String login(LoginRequest request) {
+        CustomerLogin customerLogin = customerLoginRepository.findById(request.getUsername()).orElse(null);
+        if (customerLogin != null && passwordEncoder.matches(request.getPassword(), customerLogin.getPassword())) {
+            return jwtTokenUtil.generateToken(request.getUsername());
         }
-
-        return customerLogin;
+        return null;
     }
 
     private boolean isValidPassword(String password) {
         // Regex enforces to have passwords of at least length 8 of any symbol
         String regex = "^.{8,}$";
         return password.matches(regex);
+    }
+
+    public CustomerLogin getCustomerLoginFromToken(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7); // Remove the "Bearer " prefix
+        }
+
+        if (!jwtTokenUtil.validateToken(token)) {
+            throw new UnauthorizedException("Invalid token");
+        }
+        String username = jwtTokenUtil.getUsernameFromToken(token);
+        return customerLoginRepository.findById(username)
+                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
     }
 }

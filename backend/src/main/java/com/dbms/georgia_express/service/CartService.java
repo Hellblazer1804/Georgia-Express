@@ -9,6 +9,7 @@ import com.dbms.georgia_express.model.Inventory;
 import com.dbms.georgia_express.repositories.CartItemRepository;
 import com.dbms.georgia_express.repositories.CartRepository;
 import com.dbms.georgia_express.repositories.CustomerLoginRepository;
+import com.dbms.georgia_express.security.JwtTokenUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,10 +28,15 @@ public class CartService {
     private CustomerLoginRepository customerLoginRepository;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
-    public void addToCart(String username, Long itemId, Integer quantity) {
-        CustomerLogin customerLogin = customerLoginRepository.findById(username)
-                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
+    @Autowired
+    private CustomerLoginService customerLoginService;
+
+
+    public void addToCart(String token, Long itemId, Integer quantity) {
+        CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
 
         Inventory item = inventoryService.findItemById(Math.toIntExact(itemId))
                 .orElseThrow(() -> new NotFoundException("Item not found"));
@@ -60,10 +66,8 @@ public class CartService {
         updateCartAmount(cart);
     }
 
-    public void removeFromCart(String username, Long itemId) {
-        CustomerLogin customerLogin = customerLoginRepository.findById(username)
-                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
-
+    public void removeFromCart(String token, Long itemId) {
+        CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
         Inventory item = inventoryService.findItemById(Math.toIntExact(itemId))
                 .orElseThrow(() -> new NotFoundException("Item not found"));
 
@@ -80,9 +84,8 @@ public class CartService {
         updateCartAmount(cart);
     }
 
-    public List<CartItem> getCart(String username) {
-        CustomerLogin customerLogin = customerLoginRepository.findById(username)
-                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
+    public List<CartItem> getCart(String token) {
+        CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
 
         Cart cart = cartRepository.findByCustomerLogin(customerLogin)
                 .orElseThrow(() -> new NotFoundException("Cart not found"));
@@ -90,9 +93,8 @@ public class CartService {
         return cart.getCartItems();
     }
 
-    public void clearCart(String username) {
-        CustomerLogin customerLogin = customerLoginRepository.findById(username)
-                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
+    public void clearCart(String token) {
+        CustomerLogin customerLogin = customerLoginService.getCustomerLoginFromToken(token);
 
         Cart cart = cartRepository.findByCustomerLogin(customerLogin)
                 .orElseThrow(() -> new NotFoundException("Cart not found"));
