@@ -62,15 +62,16 @@ export default function CreateAccount() {
                 }
             });
 
+            console.log("Card response:", cardResponse);
             if (!cardResponse.ok) {
-                throw new Error("Failed to generate card");
+                throw new Error("Customer is not qualified for a credit card. Please contact customer support.");
             }
             const cardData = await cardResponse.json();
             console.log("Card data:", cardData);
             router.push(`/login`);
-        } catch (error) {
-            console.error("Error during account creation:", error);
-            alert(`An error occurred`);
+        } catch (error: any) {
+            alert(error.message);
+            router.push("/");
         }
     };
 

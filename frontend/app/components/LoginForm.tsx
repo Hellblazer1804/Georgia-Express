@@ -78,7 +78,7 @@ export default function LoginForm() {
                     <button type="submit" className={style.formButton}>
                         Login
                     </button>
-                    <a href="./createAccount">Create account</a>
+                    <a href="./">Create account</a>
                 </form>
             </div>
         </section>
